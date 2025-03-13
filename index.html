@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <button id="theme-toggle" aria-label="Toggle Theme">
+            <span class="icon">☀️</span>
+        </button>
+    </header>
+    <main class="container">
+        <h1>URL Shortener</h1>
+        <p>Shorten your links quickly and easily.</p>
+        
+        <div class="url-shortener">
+            <div class="form-group">
+                <label for="longUrl">Enter your URL:</label>
+                <input type="url" id="longUrl" placeholder="https://example.com" required>
+                <button id="shorten-btn" class="shorten-btn">Shorten</button>
+            </div>
+            <div class="result" id="result" style="display: none;">
+                <label>Shortened URL:</label>
+                <div class="short-url-group">
+                    <span id="shortUrl"></span>
+                    <button id="copy-btn" class="copy-btn">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <p>Want to see the code? Check it out on GitHub: <a href="https://github.com/Dev-Geniy/" target="_blank">https://github.com/Dev-Geniy/</a></p>
+        <p class="note">Этот микросервис позволяет сократить длинные ссылки без регистрации и сложной настройки.</p>
+    </main>
+    
+    <footer class="footer">
+        <div class="social">
+            <img src="https://cdn3d.iconscout.com/3d/free/thumb/free-twitter-x-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-network-social-media-pack-logos-icons-8050016.png?f=webp" alt="Twitter Icon" class="twitter-icon">
+            <div>
+                <a href="https://twitter.com/HotDog850642" target="_blank">@HotDog850642</a>
+                <p>I'm a code developer. Feel free to reach out!</p>
+            </div>
+        </div>
+        <div class="donation">
+            <h3>For voluntary donations</h3>
+            <div class="btc-address">
+                <span id="btc-code">bc1q3r5gad7dxc276ael06n02gek7ncm536hpndgmq</span>
+                <button class="copy-btn" data-target="btc-code">Copy</button>
+            </div>
+            <p class="thanks">Thank you for your support!</p>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
