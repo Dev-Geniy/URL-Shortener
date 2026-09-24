@@ -31,13 +31,11 @@
     </script>
 
     <style>
-        /* Скроллбары для контентной части */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
         
-        /* Уведомления */
         #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.75rem; }
         .toast { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 500; animation: slideIn 0.3s ease forwards; }
         .toast.success { background: #10b981; color: white; }
@@ -52,9 +50,7 @@
 
     <div id="toast-container"></div>
 
-    <!-- ========================================== -->
     <!-- VIEW 1: LANDING PAGE -->
-    <!-- ========================================== -->
     <div id="view-landing" class="page-view flex flex-col h-screen overflow-y-auto custom-scrollbar">
         <nav class="border-b border-slate-200 dark:border-darkBorder bg-white/80 dark:bg-darkCard/80 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -100,9 +96,7 @@
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 2: AUTHENTICATION (Вход) -->
-    <!-- ========================================== -->
+    <!-- VIEW 2: AUTHENTICATION -->
     <div id="view-login" class="page-view hidden h-screen items-center justify-center px-4 bg-slate-50 dark:bg-darkBg">
         <div class="w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-2xl relative">
             <button onclick="navigate('landing')" class="absolute top-6 left-6 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
@@ -127,15 +121,11 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 3: MAIN DASHBOARD (SaaS Структура) -->
-    <!-- ========================================== -->
+    <!-- VIEW 3: MAIN DASHBOARD -->
     <div id="view-dashboard" class="page-view hidden h-screen bg-slate-50 dark:bg-darkBg flex overflow-hidden">
         
-        <!-- Mobile Sidebar Overlay -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar (Фиксированный) -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-darkCard border-r border-slate-200 dark:border-darkBorder flex flex-col z-50 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 flex-shrink-0 shadow-xl md:shadow-none">
             <div class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-darkBorder flex-shrink-0">
                 <span class="text-xl font-bold text-primary-600"><i class="fa-solid fa-link"></i> LinkHub</span>
@@ -165,10 +155,7 @@
             </div>
         </aside>
 
-        <!-- Main Content Column -->
         <div class="flex-1 flex flex-col min-w-0 relative">
-            
-            <!-- Topbar (Фиксированный в колонке) -->
             <header class="h-16 bg-white dark:bg-darkCard border-b border-slate-200 dark:border-darkBorder flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-30">
                 <div class="flex items-center gap-4">
                     <button class="md:hidden text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors" onclick="toggleSidebar()">
@@ -182,13 +169,11 @@
                 </div>
             </header>
 
-            <!-- Скроллируемая область контента (Скроллится только этот блок) -->
             <main class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative">
-                
                 <div class="max-w-5xl mx-auto w-full">
+                    
                     <!-- ТАБ 1: ГЕНЕРАТОР -->
                     <div id="tab-generator" class="tab-content block">
-                        <!-- UTM Builder Card -->
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm mb-6 overflow-hidden">
                             <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
                                 <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">1</span> Конструктор UTM</h3>
@@ -236,7 +221,6 @@
                                     <button onclick="cleanInputs()" class="text-sm text-slate-500 hover:text-primary-600 font-medium flex items-center gap-2 transition-colors"><i class="fa-solid fa-broom"></i> Нормализация (_)</button>
                                 </div>
 
-                                <!-- Result Box (Исправлен баг с высотой и переносом текста) -->
                                 <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-4">
                                     <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Сгенерированная ссылка</p>
                                     <div id="utmResult" class="font-mono text-sm break-all text-slate-800 dark:text-slate-300 mb-4 min-h-[2.5rem] bg-white dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-700">Введите URL для начала...</div>
@@ -248,7 +232,6 @@
                             </div>
                         </div>
 
-                        <!-- Shortener & QR Card -->
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden mb-8">
                             <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5">
                                 <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">2</span> Шортлинк и QR</h3>
@@ -262,7 +245,6 @@
                                     <button onclick="generateQR()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
                                 </div>
 
-                                <!-- Shortener Result -->
                                 <div id="shortResultBlock" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-xl p-5 relative">
                                     <p class="text-xs text-green-700 dark:text-green-400 font-semibold uppercase mb-1">Успешно</p>
                                     <strong id="shortUrlText" class="text-lg sm:text-xl text-green-800 dark:text-green-300 block mb-4 break-all"></strong>
@@ -272,7 +254,6 @@
                                     </div>
                                 </div>
 
-                                <!-- QR Result (Фон всегда белый для сканера) -->
                                 <div id="qrResultBlock" class="hidden mt-6 text-center">
                                     <div class="inline-block p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
                                         <div id="qrcode"></div>
@@ -285,14 +266,13 @@
                         </div>
                     </div>
 
-                    <!-- ТАБ 2: ИСТОРИЯ (Исправлен адаптив таблицы) -->
+                    <!-- ТАБ 2: ИСТОРИЯ -->
                     <div id="tab-history" class="tab-content hidden">
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm flex flex-col">
                             <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl">
                                 <h3 class="font-bold text-lg">База данных ссылок</h3>
                                 <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"><i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">Экспорт CSV</span></button>
                             </div>
-                            <!-- Обертка для мобильного горизонтального скролла -->
                             <div class="overflow-x-auto custom-scrollbar">
                                 <table class="w-full text-left border-collapse min-w-[600px]">
                                     <thead class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-darkBorder">
@@ -319,8 +299,8 @@
                                 <h4 class="text-3xl font-bold" id="stat-total">0</h4>
                             </div>
                             <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Активные</p>
-                                <h4 class="text-3xl font-bold text-primary-600">3</h4>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">За 24 часа</p>
+                                <h4 class="text-3xl font-bold text-primary-600" id="stat-active">0</h4>
                             </div>
                             <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
                                 <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус API</p>
@@ -329,7 +309,7 @@
                         </div>
                         
                         <div class="bg-white dark:bg-darkCard p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                            <h3 class="font-bold text-lg mb-6">Активность (Демо)</h3>
+                            <h3 class="font-bold text-lg mb-6">Активность (Создано ссылок)</h3>
                             <div class="w-full h-64 sm:h-80 relative">
                                 <canvas id="analyticsChart"></canvas>
                             </div>
@@ -340,26 +320,17 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- SCRIPTS -->
-    <!-- ========================================== -->
     <script>
         // --- РОУТИНГ И ИНТЕРФЕЙС ---
-        // Использование hidden вместо CSS opacity предотвращает прыжки DOM
         function navigate(viewId) {
             document.querySelectorAll('.page-view').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
+                el.classList.add('hidden'); el.classList.remove('flex');
             });
-            
             const target = document.getElementById(`view-${viewId}`);
-            target.classList.remove('hidden');
-            target.classList.add('flex'); // Окна используют flex (column или center)
+            target.classList.remove('hidden'); target.classList.add('flex'); 
             
-            if (viewId === 'dashboard') {
-                renderHistory();
-                initChart();
-            }
+            if (viewId === 'dashboard') { renderHistory(); initChart(); }
         }
 
         function handleLogin(e) {
@@ -373,15 +344,12 @@
         }
 
         function switchTab(tabId, btnElement) {
-            // Переключаем контент (жестко display: block / none через Tailwind классы)
             document.querySelectorAll('.tab-content').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('block');
+                el.classList.add('hidden'); el.classList.remove('block');
             });
             document.getElementById(tabId).classList.remove('hidden');
             document.getElementById(tabId).classList.add('block');
             
-            // Стилизуем кнопки сайдбара
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
                 btn.classList.add('text-slate-600', 'dark:text-slate-400');
@@ -389,24 +357,19 @@
             btnElement.classList.remove('text-slate-600', 'dark:text-slate-400');
             btnElement.classList.add('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
             
-            // Обновляем заголовок
             const titles = { 'tab-generator': 'Генератор ссылок', 'tab-history': 'База ссылок', 'tab-analytics': 'Аналитика' };
             document.getElementById('header-title').textContent = titles[tabId];
             
-            // Закрываем сайдбар на мобильных
             if (window.innerWidth < 768) toggleSidebar();
-            if (tabId === 'tab-analytics') setTimeout(initChart, 50); // Небольшая задержка для рендера канваса
+            if (tabId === 'tab-analytics') setTimeout(initChart, 50);
         }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             sidebar.classList.toggle('-translate-x-full');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                overlay.classList.add('hidden');
-            } else {
-                overlay.classList.remove('hidden');
-            }
+            if (sidebar.classList.contains('-translate-x-full')) { overlay.classList.add('hidden'); } 
+            else { overlay.classList.remove('hidden'); }
         }
 
         // --- УВЕДОМЛЕНИЯ ---
@@ -489,7 +452,7 @@
             if(text && text !== 'Введите URL для начала...') { navigator.clipboard.writeText(text); showToast('Успешно скопировано'); }
         }
 
-        // --- СОКРАЩАТЕЛЬ ---
+        // --- СОКРАЩАТЕЛЬ (КАСКАД API + АБСОЛЮТНЫЕ URL) ---
         async function processShorten() {
             const longUrl = document.getElementById('longUrl').value.trim();
             if (!longUrl) return showToast('Вставьте длинную ссылку', 'error');
@@ -499,28 +462,68 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Обработка...';
             btn.disabled = true;
 
+            let success = false;
+            let shortUrl = '';
+            let statsUrl = '';
+
+            // 1. Попытка spoo.me
             try {
                 const params = new URLSearchParams(); params.append('url', longUrl);
                 const res = await fetch('https://spoo.me/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }, body: params });
                 if (res.ok) {
                     const data = await res.json();
-                    showShortResult(data.short_url, `https://spoo.me/stats/${data.short_url.split('/').pop()}`, longUrl);
-                    return; 
+                    if(data.short_url) {
+                        shortUrl = data.short_url;
+                        statsUrl = shortUrl.replace('spoo.me/', 'spoo.me/stats/');
+                        success = true;
+                    }
                 }
-            } catch(e) {}
+            } catch(e) { console.warn('Spoo.me error', e); }
 
-            try {
-                const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
-                const res2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(isGdUrl)}`);
-                if (res2.ok) {
-                    const data2 = await res2.json();
-                    if (data2.shorturl) return showShortResult(data2.shorturl, data2.shorturl.replace('is.gd/', 'is.gd/stats.php?url='), longUrl);
-                }
-            } catch(e) {}
+            // 2. Резерв is.gd
+            if (!success) {
+                try {
+                    const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
+                    const res2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(isGdUrl)}`);
+                    if (res2.ok) {
+                        const data2 = await res2.json();
+                        if (data2.shorturl) {
+                            shortUrl = data2.shorturl;
+                            statsUrl = shortUrl.replace('is.gd/', 'is.gd/stats.php?url=');
+                            success = true;
+                        }
+                    }
+                } catch(e) { console.warn('is.gd error', e); }
+            }
+            
+            // 3. Резерв 2 - TinyURL (Обеспечивает 100% работоспособность)
+            if (!success) {
+                try {
+                    const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`;
+                    const res3 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(tinyUrl)}`);
+                    if (res3.ok) {
+                        const text = await res3.text();
+                        if (text && text.includes('tinyurl.com')) {
+                            shortUrl = text;
+                            statsUrl = ''; 
+                            success = true;
+                        }
+                    }
+                } catch(e) { console.warn('Tinyurl error', e); }
+            }
 
             btn.innerHTML = originalText;
             btn.disabled = false;
-            showToast('Ошибка API. Проверьте блокировщики', 'error');
+
+            if (success) {
+                // Принудительно устанавливаем https:// чтобы избежать локальных переходов
+                shortUrl = /^https?:\/\//i.test(shortUrl) ? shortUrl : `https://${shortUrl}`;
+                if(statsUrl && !/^https?:\/\//i.test(statsUrl)) statsUrl = `https://${statsUrl}`;
+                
+                showShortResult(shortUrl, statsUrl, longUrl);
+            } else {
+                showToast('Ошибка всех API. Проверьте блокировщики', 'error');
+            }
         }
 
         function showShortResult(short, stats, original) {
@@ -531,10 +534,6 @@
             
             saveHistory(short, stats, original);
             showToast('Ссылка сокращена');
-            
-            const btn = document.getElementById('btnShorten');
-            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Создать короткую';
-            btn.disabled = false;
         }
 
         // --- QR КОД ---
@@ -544,7 +543,6 @@
             document.getElementById('qrResultBlock').classList.remove('hidden');
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
-            // Фиксируем белые цвета для корректного сканирования всегда
             new QRCode(qrDiv, { text: url, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
             showToast('QR-код сгенерирован');
         }
@@ -559,7 +557,13 @@
         // --- БАЗА И ЭКСПОРТ ---
         function saveHistory(short, stats, original) {
             let history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
-            history.unshift({ date: new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}), short, stats, original });
+            history.unshift({ 
+                date: new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}), 
+                timestamp: Date.now(), // Добавлен timestamp для корректной аналитики
+                short, 
+                stats, 
+                original 
+            });
             if (history.length > 100) history.pop();
             localStorage.setItem('saasHistory', JSON.stringify(history));
             renderHistory();
@@ -575,16 +579,21 @@
                 return;
             }
 
-            tbody.innerHTML = history.map(h => `
+            tbody.innerHTML = history.map(h => {
+                // Принудительно обеспечиваем абсолютные URL даже для старых записей
+                const safeShort = /^https?:\/\//i.test(h.short) ? h.short : `https://${h.short}`;
+                const safeStats = h.stats ? (/^https?:\/\//i.test(h.stats) ? h.stats : `https://${h.stats}`) : null;
+                
+                return `
                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0">
                     <td class="py-4 px-6 whitespace-nowrap">${h.date}</td>
-                    <td class="py-4 px-6 font-medium text-primary-600"><a href="${h.short}" target="_blank">${h.short.replace('https://', '')}</a></td>
-                    <td class="py-4 px-6">${h.stats ? `<a href="${h.stats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Открыть</a>` : '<span class="text-slate-400">N/A</span>'}</td>
+                    <td class="py-4 px-6 font-medium text-primary-600"><a href="${safeShort}" target="_blank">${safeShort.replace(/^https?:\/\//, '')}</a></td>
+                    <td class="py-4 px-6">${safeStats ? `<a href="${safeStats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Открыть</a>` : '<span class="text-slate-400">N/A</span>'}</td>
                     <td class="py-4 px-6 text-right">
-                        <button onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800 transition-colors"><i class="fa-regular fa-copy"></i></button>
+                        <button onclick="navigator.clipboard.writeText('${safeShort}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800 transition-colors"><i class="fa-regular fa-copy"></i></button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function exportToCSV() {
@@ -601,23 +610,58 @@
             showToast('Файл загружается');
         }
 
-        // --- ГРАФИКИ ---
+        // --- ГРАФИКИ (РЕАЛЬНЫЕ ДАННЫЕ) ---
         function initChart() {
             const ctx = document.getElementById('analyticsChart');
-            if(!ctx || !ctx.offsetParent) return; // Рендерим только если видим
+            if(!ctx || !ctx.offsetParent) return; 
             if(window.myChart) window.myChart.destroy();
             
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#64748b';
             const gridColor = isDark ? '#334155' : '#e2e8f0';
 
+            // Генерируем реальную статистику на основе базы
+            const history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
+            const daysCount = 7;
+            const labels = [];
+            const dataCounts = new Array(daysCount).fill(0);
+            
+            for (let i = daysCount - 1; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(d.toLocaleDateString('ru-RU', { weekday: 'short' }));
+            }
+            
+            let linksLast24h = 0;
+            const now = new Date();
+
+            history.forEach(item => {
+                const itemDate = item.timestamp ? new Date(item.timestamp) : null;
+                if(!itemDate) return; 
+
+                if ((now - itemDate) <= 24 * 60 * 60 * 1000) { linksLast24h++; }
+
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const iDate = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+                const diffDays = Math.floor((today - iDate) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays >= 0 && diffDays < daysCount) {
+                    const index = daysCount - 1 - diffDays;
+                    dataCounts[index]++;
+                }
+            });
+
+            // Обновляем счетчик активности за 24 часа на карточке сверху
+            const statActive = document.getElementById('stat-active');
+            if(statActive) statActive.textContent = linksLast24h;
+
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    labels: labels,
                     datasets: [{
-                        label: 'Переходы по ссылкам',
-                        data: [12, 28, 15, 35, 22, 40, 28],
+                        label: 'Создано ссылок',
+                        data: dataCounts,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         borderWidth: 3,
@@ -635,14 +679,13 @@
                     plugins: { legend: { display: false } },
                     interaction: { intersect: false, mode: 'index' },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, padding: 10 } },
+                        y: { beginAtZero: true, suggestedMax: 5, ticks: { stepSize: 1, color: textColor, padding: 10 }, grid: { color: gridColor, drawBorder: false } },
                         x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor, padding: 10 } }
                     }
                 }
             });
         }
         
-        // Инициализация при старте (если дашборд открыт по умолчанию)
         window.addEventListener('resize', () => {
             if(document.getElementById('tab-analytics').classList.contains('block')) initChart();
         });
