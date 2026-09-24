@@ -3,675 +3,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UTM Builder & Open Shortener with Analytics</title>
-    <!-- Подключение библиотеки QR-кода -->
+    <title>PRO UTM Builder & Shortener</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --button-bg: #0d6efd;
-            --button-hover: #0b5ed7;
-            --border-color: #dee2e6;
-            --input-bg: #ffffff;
-            --accent-bg: #e7f1ff;
-            --success-color: #198754;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #3498db;
+            --primary-hover: #2980b9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --border: #e0e6ed;
+            --input-bg: #f8fafc;
         }
 
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #f8f9fa;
-            --text-muted: #adb5bd;
-            --button-bg: #0d6efd;
-            --button-hover: #0b5ed7;
-            --border-color: #333333;
-            --input-bg: #2b2b2b;
-            --accent-bg: #1c2d42;
-            --success-color: #20c997;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --border: #334155;
+            --input-bg: #0f172a;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background: var(--bg-color); color: var(--text-color); transition: 0.3s; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header { background: var(--card-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .theme-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .theme-btn:hover { border-color: var(--primary); }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; }
+        
+        .header-text { text-align: center; margin-bottom: 40px; }
+        .header-text h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--input-bg); padding-bottom: 15px; }
+        .card-header h2 { font-size: 1.4rem; }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .form-group label span.req { color: var(--danger); }
+        .form-control { width: 100%; padding: 12px 15px; font-size: 1rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--input-bg); color: var(--text-color); transition: 0.2s; outline: none; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; gap: 0; } }
 
-        .logo {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--button-bg);
-        }
+        .tags-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .tag { background: var(--input-bg); border: 1px solid var(--border); color: var(--primary); padding: 5px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .tag:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-        #theme-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 12px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #27ae60; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-color); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: transparent; }
 
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-            flex: 1;
-            width: 100%;
-        }
+        .result-box { background: var(--input-bg); border: 2px dashed var(--primary); border-radius: 10px; padding: 20px; margin-top: 20px; font-family: monospace; word-break: break-all; font-size: 1.05rem; line-height: 1.5; position: relative; }
+        
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
+        th { font-weight: 600; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; }
+        td { font-size: 0.95rem; }
+        
+        .qr-wrapper { text-align: center; padding: 20px; background: white; border-radius: 12px; display: inline-block; margin-top: 20px; border: 1px solid var(--border); }
+        
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); color: var(--text-color); padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; font-weight: 600; animation: slideIn 0.3s ease forwards; }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.success { border-left-color: var(--success); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        .title-block {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .title-block h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .title-block p {
-            color: var(--text-muted);
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-
-        .card h2 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            color: var(--text-color);
-            outline: none;
-        }
-
-        .presets {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .preset-btn, .var-btn {
-            background: var(--accent-bg);
-            color: var(--button-bg);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 600px) {
-            .grid-2 { grid-template-columns: 1fr; }
-        }
-
-        .quick-vars {
-            margin-top: 5px;
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            background: var(--button-bg);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .btn-secondary {
-            background: var(--text-muted);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .result-box {
-            background: var(--accent-bg);
-            border: 1px dashed var(--button-bg);
-            border-radius: 8px;
-            padding: 15px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.95rem;
-            margin-top: 15px;
-        }
-
-        .qr-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        #qrcode {
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .history-list {
-            list-style: none;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            gap: 10px;
-        }
-
-        .history-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            overflow: hidden;
-        }
-
-        .history-short {
-            font-weight: bold;
-            color: var(--button-bg);
-        }
-
-        .history-long {
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .footer {
-            background: var(--card-bg);
-            padding: 25px 15px;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-            margin-top: 40px;
-        }
-
-        .social {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .twitter-icon {
-            width: 32px;
-            height: 32px;
-        }
-
-        .donation {
-            margin-top: 15px;
-        }
-
-        .btc-address {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--input-bg);
-            padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-top: 8px;
-        }
-
-        a {
-            color: var(--button-bg);
-            text-decoration: none;
-        }
+        footer { text-align: center; padding: 30px; margin-top: auto; border-top: 1px solid var(--border); color: var(--text-muted); }
     </style>
 </head>
 <body>
+
     <header>
-        <div class="logo">🔗 UTM & Open Analytics Hub</div>
-        <button id="theme-toggle" aria-label="Toggle Theme">
-            <span class="icon">☀️</span> <span id="theme-text">Light</span>
-        </button>
+        <div class="logo">⚡ UTM PRO Hub</div>
+        <button class="theme-btn" id="theme-toggle">🌙 Тема</button>
     </header>
 
+    <div id="toast-container"></div>
+
     <main class="container">
-        <div class="title-block">
-            <h1>Генератор UTM и Сокращатель со Статистикой</h1>
-            <p>Работает на 100% бесплатно и без необходимости создавать ключи API</p>
+        <div class="header-text">
+            <h1>Профессиональный генератор ссылок</h1>
+            <p>Создание UTM-меток, шортлинков со статистикой и QR-кодов в едином окне</p>
         </div>
 
-        <!-- 1. UTM BUILDER -->
+        <!-- БЛОК 1: UTM GENERATOR -->
         <div class="card">
-            <h2>1. Конструктор UTM-меток</h2>
-            
-            <div class="form-group">
-                <label for="targetUrl">Целевой URL сайта *</label>
-                <input type="url" id="targetUrl" placeholder="https://example.com/landing" required>
+            <div class="card-header">
+                <h2>1. Настройка UTM-меток</h2>
+                <div>
+                    <button class="tag" onclick="applyPreset('meta')">🔥 Meta (FB/Inst) Lead Gen</button>
+                    <button class="tag" onclick="applyPreset('google')">Google Ads</button>
+                    <button class="tag" onclick="applyPreset('tg')">Telegram</button>
+                </div>
             </div>
 
-            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 6px;">Быстрый выбор источника (Пресеты):</label>
-            <div class="presets">
-                <button class="preset-btn" onclick="applyPreset('facebook')">Meta / Facebook Ads</button>
-                <button class="preset-btn" onclick="applyPreset('google')">Google Ads</button>
-                <button class="preset-btn" onclick="applyPreset('tiktok')">TikTok Ads</button>
-                <button class="preset-btn" onclick="applyPreset('telegram')">Telegram</button>
+            <div class="form-group">
+                <label>Целевая ссылка (URL) <span class="req">*</span></label>
+                <input type="url" id="targetUrl" class="form-control" placeholder="https://skysource.com.ua/landing">
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label for="utmSource">utm_source (Источник) *</label>
-                    <input type="text" id="utmSource" placeholder="facebook / google / telegram">
+                    <label>Источник (utm_source) <span class="req">*</span></label>
+                    <input type="text" id="utmSource" class="form-control" placeholder="facebook / google / email">
                 </div>
                 <div class="form-group">
-                    <label for="utmMedium">utm_medium (Тип трафика) *</label>
-                    <input type="text" id="utmMedium" placeholder="cpc / paid / cpm">
+                    <label>Тип трафика (utm_medium) <span class="req">*</span></label>
+                    <input type="text" id="utmMedium" class="form-control" placeholder="cpc / lead_form / cpm">
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label for="utmCampaign">utm_campaign (Кампания)</label>
-                    <input type="text" id="utmCampaign" placeholder="water_delivery_dnipro">
-                    <div class="quick-vars">
-                        <button class="var-btn" onclick="addMetaVar('utmCampaign', '{{campaign.name}}')">+ {{campaign.name}}</button>
-                        <button class="var-btn" onclick="addMetaVar('utmCampaign', '{{campaign.id}}')">+ {{campaign.id}}</button>
+                    <label>Кампания (utm_campaign)</label>
+                    <input type="text" id="utmCampaign" class="form-control" placeholder="lead_gen_dnipro">
+                    <div class="tags-wrapper">
+                        <span class="tag" onclick="insertVar('utmCampaign', '{{campaign.name}}')">{{campaign.name}}</span>
+                        <span class="tag" onclick="insertVar('utmCampaign', '{{campaign.id}}')">{{campaign.id}}</span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="utmContent">utm_content (Объявление / Креатив)</label>
-                    <input type="text" id="utmContent" placeholder="banner_discount">
-                    <div class="quick-vars">
-                        <button class="var-btn" onclick="addMetaVar('utmContent', '{{ad.name}}')">+ {{ad.name}}</button>
-                        <button class="var-btn" onclick="addMetaVar('utmContent', '{{adset.name}}')">+ {{adset.name}}</button>
+                    <label>Креатив (utm_content)</label>
+                    <input type="text" id="utmContent" class="form-control" placeholder="video_pump_18L">
+                    <div class="tags-wrapper">
+                        <span class="tag" onclick="insertVar('utmContent', '{{ad.name}}')">{{ad.name}}</span>
+                        <span class="tag" onclick="insertVar('utmContent', '{{adset.name}}')">{{adset.name}}</span>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="utmTerm">utm_term (Ключевое слово / Аудитория)</label>
-                <input type="text" id="utmTerm" placeholder="lookalike_1pct">
+                <label>Ключевое слово / Аудитория (utm_term)</label>
+                <input type="text" id="utmTerm" class="form-control" placeholder="lookalike_broad">
             </div>
 
-            <div class="btn-group">
-                <button class="preset-btn" onclick="cleanInputs()">Очистить пробелы & Нижний регистр</button>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-outline" onclick="cleanInputs()">🧹 Форматировать (Нижний регистр + '_')</button>
             </div>
 
-            <div class="result-box" id="utmResult">Ссылка появится здесь после заполнения формы...</div>
-
-            <div class="btn-group">
-                <button class="btn" onclick="copyUtmUrl()">Скопировать UTM-ссылку</button>
+            <div class="result-box" id="utmResult">
+                Ссылка формируется автоматически...
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="btn" onclick="copyText('utmResult')">📋 Копировать UTM</button>
+                <button class="btn btn-success" onclick="transferToShortener()">⬇️ Перенести в сокращатель</button>
             </div>
         </div>
 
-        <!-- 2. SHORTENER & ANALYTICS -->
+        <!-- БЛОК 2: SHORTENER & QR -->
         <div class="card">
-            <h2>2. Сокращение ссылки с открытой аналитикой</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
-                Используется открытая служба is.gd / v.gd (без ключей). Каждая ссылка получает персональную страницу статистики переходов.
-            </p>
+            <div class="card-header">
+                <h2>2. Сокращение и QR-код</h2>
+            </div>
             
             <div class="form-group">
-                <label for="longUrl">Ссылка для сокращения:</label>
-                <input type="url" id="longUrl" placeholder="https://example.com/..." required>
+                <label>Длинная ссылка для обработки:</label>
+                <input type="url" id="longUrl" class="form-control" placeholder="Вставьте ссылку здесь...">
             </div>
 
-            <div class="btn-group">
-                <button id="shorten-btn" class="btn">Сократить и включить статистику</button>
-                <button class="btn btn-secondary" onclick="generateQRCode()">Сгенерировать QR-код</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="btnShorten" class="btn" onclick="processShorten()">🚀 Сократить (с аналитикой)</button>
+                <button class="btn btn-outline" onclick="generateQR()">📱 Создать QR-код</button>
             </div>
 
-            <div class="result-box" id="shortResult" style="display: none;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Короткая ссылка:</label>
-                <span id="shortUrl" style="font-weight: bold; color: var(--button-bg);"></span>
-                <div class="btn-group" style="margin-top: 10px;">
-                    <button class="preset-btn" id="copy-short-btn">Скопировать</button>
-                    <a id="statsLinkBtn" target="_blank" class="preset-btn" style="background: var(--success-color); color: white;">📊 Просмотр статистики кликов</a>
+            <div id="shortResultBlock" class="result-box" style="display: none; border-color: var(--success);">
+                <div style="margin-bottom: 10px; color: var(--text-muted);">Готовая ссылка:</div>
+                <strong id="shortUrlText" style="font-size: 1.3rem; color: var(--primary);"></strong>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn" onclick="copyText('shortUrlText', true)">📋 Копировать</button>
+                    <a id="statsLink" href="#" target="_blank" class="btn btn-success" style="text-decoration: none;">📊 Открыть статистику</a>
                 </div>
             </div>
 
-            <div class="qr-container" id="qrContainer" style="display: none;">
-                <div id="qrcode"></div>
-                <button class="preset-btn" onclick="downloadQR()">Скачать QR-код (PNG)</button>
+            <div id="qrResultBlock" style="display: none; text-align: center;">
+                <div class="qr-wrapper">
+                    <div id="qrcode"></div>
+                </div>
+                <br>
+                <button class="btn btn-outline" onclick="downloadQR()">📥 Скачать PNG</button>
             </div>
         </div>
 
-        <!-- 3. HISTORY -->
+        <!-- БЛОК 3: ИСТОРИЯ -->
         <div class="card">
-            <h2>3. История созданных ссылок</h2>
-            <ul class="history-list" id="historyList">
-                <li style="color: var(--text-muted); font-size: 0.85rem;">История пока пуста.</li>
-            </ul>
+            <div class="card-header">
+                <h2>3. История кампаний</h2>
+                <button class="tag" onclick="exportToCSV()" style="background: var(--success); color: white;">💾 Экспорт в CSV</button>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Короткая ссылка</th>
+                            <th>Статистика</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <!-- Контент генерируется JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <p style="text-align: center; font-size: 0.9rem;">
-            Исходный код проекта: 
-            <a href="https://github.com/Dev-Geniy/URL-Shortener/" target="_blank">Dev-Geniy/URL-Shortener</a>
-        </p>
     </main>
 
-    <footer class="footer">
-        <div class="social">
-            <img src="https://cdn3d.iconscout.com/3d/free/thumb/free-twitter-x-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-network-social-media-pack-logos-icons-8050016.png?f=webp" alt="X Icon" class="twitter-icon">
-            <div>
-                <a href="https://twitter.com/HotDog850642" target="_blank">@HotDog850642</a>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Code Developer. Feel free to reach out!</p>
-            </div>
-        </div>
-        <div class="donation">
-            <p style="font-weight: 600; font-size: 0.95rem;">For voluntary donations:</p>
-            <div class="btc-address">
-                <span id="btc-code">bc1q3r5gad7dxc276ael06n02gek7ncm536hpndgmq</span>
-                <button class="preset-btn" id="copy-btc-btn">Copy</button>
-            </div>
-        </div>
+    <footer>
+        <p>Created for Professional Marketers. Open Source Tech Stack.</p>
+        <p style="font-size: 0.85rem; margin-top: 5px; opacity: 0.7;">Dev-Geniy | 2026</p>
     </footer>
 
     <script>
-        // --- ТЕМА (DARK / LIGHT) ---
-        const toggleButton = document.getElementById('theme-toggle');
-        const themeText = document.getElementById('theme-text');
-        const icon = toggleButton.querySelector('.icon');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        setTheme(savedTheme);
-
-        toggleButton.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            setTheme(currentTheme === 'light' ? 'dark' : 'light');
-        });
-
-        function setTheme(theme) {
-            body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            icon.textContent = theme === 'light' ? '☀️' : '🌙';
-            themeText.textContent = theme === 'light' ? 'Light' : 'Dark';
+        // --- 1. TOAST NOTIFICATIONS (Уведомления) ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'success' ? `✅ ${message}` : `⚠️ ${message}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        // --- UTM BUILDER LOGIC ---
-        const targetUrlInput = document.getElementById('targetUrl');
-        const utmSourceInput = document.getElementById('utmSource');
-        const utmMediumInput = document.getElementById('utmMedium');
-        const utmCampaignInput = document.getElementById('utmCampaign');
-        const utmContentInput = document.getElementById('utmContent');
-        const utmTermInput = document.getElementById('utmTerm');
-        const utmResult = document.getElementById('utmResult');
-        const longUrlInput = document.getElementById('longUrl');
+        // --- 2. THEME ENGINE ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
 
-        const inputs = [targetUrlInput, utmSourceInput, utmMediumInput, utmCampaignInput, utmContentInput, utmTermInput];
-        inputs.forEach(input => input.addEventListener('input', buildUtmUrl));
+        themeBtn.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
 
-        function buildUtmUrl() {
-            let baseUrl = targetUrlInput.value.trim();
+        // --- 3. UTM BUILDER LOGIC ---
+        const inputs = ['targetUrl', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm'].map(id => document.getElementById(id));
+        inputs.forEach(el => el.addEventListener('input', updateUtmResult));
+
+        function updateUtmResult() {
+            let baseUrl = inputs[0].value.trim();
             if (!baseUrl) {
-                utmResult.textContent = 'Ссылка появится здесь после заполнения формы...';
+                document.getElementById('utmResult').textContent = 'Ссылка формируется автоматически...';
                 return '';
             }
-
-            if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
-                baseUrl = 'https://' + baseUrl;
-            }
+            if (!/^https?:\/\//i.test(baseUrl)) baseUrl = 'https://' + baseUrl;
 
             const params = new URLSearchParams();
-            if (utmSourceInput.value.trim()) params.append('utm_source', utmSourceInput.value.trim());
-            if (utmMediumInput.value.trim()) params.append('utm_medium', utmMediumInput.value.trim());
-            if (utmCampaignInput.value.trim()) params.append('utm_campaign', utmCampaignInput.value.trim());
-            if (utmContentInput.value.trim()) params.append('utm_content', utmContentInput.value.trim());
-            if (utmTermInput.value.trim()) params.append('utm_term', utmTermInput.value.trim());
+            if (inputs[1].value) params.append('utm_source', inputs[1].value.trim());
+            if (inputs[2].value) params.append('utm_medium', inputs[2].value.trim());
+            if (inputs[3].value) params.append('utm_campaign', inputs[3].value.trim());
+            if (inputs[4].value) params.append('utm_content', inputs[4].value.trim());
+            if (inputs[5].value) params.append('utm_term', inputs[5].value.trim());
 
-            const queryString = params.toString();
-            const finalUrl = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
-
-            utmResult.textContent = finalUrl;
-            longUrlInput.value = finalUrl;
+            const qs = params.toString();
+            const finalUrl = qs ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${qs}` : baseUrl;
+            document.getElementById('utmResult').textContent = finalUrl;
             return finalUrl;
         }
 
-        function applyPreset(platform) {
-            if (platform === 'facebook') {
-                utmSourceInput.value = 'facebook';
-                utmMediumInput.value = 'cpc';
-                utmCampaignInput.value = '{{campaign.name}}';
-                utmContentInput.value = '{{ad.name}}';
-            } else if (platform === 'google') {
-                utmSourceInput.value = 'google';
-                utmMediumInput.value = 'cpc';
-                utmCampaignInput.value = '{campaignid}';
-                utmContentInput.value = '{creative}';
-                utmTermInput.value = '{keyword}';
-            } else if (platform === 'tiktok') {
-                utmSourceInput.value = 'tiktok';
-                utmMediumInput.value = 'cpc';
-                utmCampaignInput.value = '__CAMPAIGN_NAME__';
-                utmContentInput.value = '__AID_NAME__';
-            } else if (platform === 'telegram') {
-                utmSourceInput.value = 'telegram';
-                utmMediumInput.value = 'post';
-            }
-            buildUtmUrl();
-        }
-
-        function addMetaVar(fieldId, variable) {
-            document.getElementById(fieldId).value = variable;
-            buildUtmUrl();
+        function insertVar(fieldId, val) {
+            const el = document.getElementById(fieldId);
+            el.value = el.value ? el.value + '_' + val : val;
+            updateUtmResult();
         }
 
         function cleanInputs() {
-            [utmSourceInput, utmMediumInput, utmCampaignInput, utmContentInput, utmTermInput].forEach(input => {
-                input.value = input.value.toLowerCase().replace(/\s+/g, '_');
+            inputs.slice(1).forEach(el => {
+                el.value = el.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_{}.]/g, '');
             });
-            buildUtmUrl();
+            updateUtmResult();
+            showToast('Метки отформатированы');
         }
 
-        function copyUtmUrl() {
-            const url = buildUtmUrl();
-            if (!url) return;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('UTM-ссылка скопирована!');
-            });
+        function applyPreset(type) {
+            if(type === 'meta') {
+                inputs[1].value = 'facebook';
+                inputs[2].value = 'lead_form'; // Оптимизировано под Instant Forms
+                inputs[3].value = '{{campaign.name}}';
+                inputs[4].value = '{{ad.name}}';
+            } else if (type === 'google') {
+                inputs[1].value = 'google';
+                inputs[2].value = 'cpc';
+                inputs[3].value = '{campaignid}';
+                inputs[4].value = '{creative}';
+                inputs[5].value = '{keyword}';
+            } else if (type === 'tg') {
+                inputs[1].value = 'telegram';
+                inputs[2].value = 'channel_post';
+                inputs[3].value = 'promo';
+            }
+            updateUtmResult();
+            showToast('Пресет применен');
         }
 
-        // --- OPEN SHORTENER API (is.gd + Open Analytics) ---
-        const shortenBtn = document.getElementById('shorten-btn');
-        const shortResult = document.getElementById('shortResult');
-        const shortUrlSpan = document.getElementById('shortUrl');
-        const copyShortBtn = document.getElementById('copy-short-btn');
-        const statsLinkBtn = document.getElementById('statsLinkBtn');
-
-        async function shortenUrl() {
-            const urlToShorten = longUrlInput.value.trim();
-            if (!urlToShorten) {
-                alert('Пожалуйста, введите корректный URL');
+        function transferToShortener() {
+            const url = updateUtmResult();
+            if(!url || url === 'Ссылка формируется автоматически...') {
+                showToast('Сначала введите целевой URL', 'error');
                 return;
             }
+            if(!inputs[1].value) {
+                showToast('Внимание: не заполнен utm_source!', 'warning');
+            }
+            document.getElementById('longUrl').value = url;
+            document.getElementById('longUrl').scrollIntoView({behavior: 'smooth', block: 'center'});
+            showToast('Ссылка перенесена');
+        }
 
-            shortenBtn.textContent = 'Сокращаем и включаем статистику...';
-            shortenBtn.disabled = true;
+        function copyText(elementId, isInput = false) {
+            const text = isInput ? document.getElementById(elementId).innerText : document.getElementById(elementId).textContent;
+            if(text && text !== 'Ссылка формируется автоматически...') {
+                navigator.clipboard.writeText(text);
+                showToast('Скопировано в буфер обмена');
+            }
+        }
 
-            try {
-                // Публичный CORS-прокси для бесплатного вызова API is.gd
-                const apiUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(urlToShorten)}&logstat=1`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
+        // --- 4. BULLETPROOF SHORTENER (JSONP API БЕЗ CORS) ---
+        // Использование JSONP позволяет делать запросы к is.gd без блокировок прокси-серверов.
+        function fetchIsGdJSONP(url) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'isgd_cb_' + Math.round(100000 * Math.random());
+                const script = document.createElement('script');
                 
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                const result = JSON.parse(data.contents);
+                // Таймаут 5 секунд на случай падения is.gd
+                const timeout = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Timeout'));
+                }, 5000);
 
-                if (result.errorcode || !result.shorturl) {
-                    throw new Error(result.errormessage || 'Ошибка генерации');
+                function cleanup() {
+                    if(document.body.contains(script)) document.body.removeChild(script);
+                    delete window[callbackName];
                 }
 
-                const shortUrl = result.shorturl;
-                const statsUrl = shortUrl.replace('is.gd/', 'is.gd/stats.php?url=');
+                window[callbackName] = function(data) {
+                    clearTimeout(timeout);
+                    cleanup();
+                    if (data.errorcode) reject(new Error(data.errormessage));
+                    else resolve(data);
+                };
 
-                shortUrlSpan.textContent = shortUrl;
-                statsLinkBtn.href = statsUrl;
-                shortResult.style.display = 'block';
+                script.src = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}&logstat=1&callback=${callbackName}`;
+                document.body.appendChild(script);
+            });
+        }
 
-                saveToHistory(shortUrl, urlToShorten, statsUrl);
-            } catch (error) {
-                alert('Не удалось сократить ссылку. Проверьте подключение к сети.');
+        async function processShorten() {
+            const longUrl = document.getElementById('longUrl').value.trim();
+            if (!longUrl) return showToast('Введите ссылку для сокращения', 'error');
+            
+            const btn = document.getElementById('btnShorten');
+            btn.innerHTML = '⏳ Обработка...';
+            btn.disabled = true;
+
+            try {
+                // Основной метод: JSONP (не блокируется CORS, дает статистику)
+                const data = await fetchIsGdJSONP(longUrl);
+                showShortResult(data.shorturl, data.shorturl.replace('is.gd/', 'is.gd/stats.php?url='), longUrl);
+            } catch (e) {
+                console.warn('is.gd недоступен, используем резервный API', e);
+                // Резервный метод: TinyURL (работает через стандартный fetch)
+                try {
+                    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                    if(!res.ok) throw new Error('TinyURL failed');
+                    const shortUrl = await res.text();
+                    showShortResult(shortUrl, null, longUrl);
+                    showToast('Сгенерировано через резервный сервер', 'warning');
+                } catch (err) {
+                    showToast('Ошибка сети. Проверьте подключение.', 'error');
+                }
             } finally {
-                shortenBtn.textContent = 'Сократить и включить статистику';
-                shortenBtn.disabled = false;
+                btn.innerHTML = '🚀 Сократить (с аналитикой)';
+                btn.disabled = false;
             }
         }
 
-        shortenBtn.addEventListener('click', shortenUrl);
-
-        copyShortBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(shortUrlSpan.textContent).then(() => {
-                copyShortBtn.textContent = 'Скопировано!';
-                setTimeout(() => copyShortBtn.textContent = 'Скопировать', 2000);
-            });
-        });
-
-        // --- QR CODE LOGIC ---
-        function generateQRCode() {
-            const url = longUrlInput.value.trim();
-            if (!url) {
-                alert('Введите URL для генерации QR-кода');
-                return;
+        function showShortResult(short, stats, original) {
+            document.getElementById('shortResultBlock').style.display = 'block';
+            document.getElementById('shortUrlText').innerText = short;
+            
+            const statsBtn = document.getElementById('statsLink');
+            if (stats) {
+                statsBtn.style.display = 'inline-flex';
+                statsBtn.href = stats;
+            } else {
+                statsBtn.style.display = 'none'; // TinyURL не дает публичной статистики
             }
+            
+            saveHistory(short, stats, original);
+            showToast('Ссылка успешно сокращена!');
+        }
 
-            const qrContainer = document.getElementById('qrContainer');
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
+        // --- 5. QR CODE GENERATOR ---
+        let qrcodeObj = null;
+        function generateQR() {
+            const url = document.getElementById('longUrl').value.trim();
+            if (!url) return showToast('Введите ссылку', 'error');
 
-            new QRCode(qrcodeDiv, {
+            document.getElementById('qrResultBlock').style.display = 'block';
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+            
+            qrcodeObj = new QRCode(qrDiv, {
                 text: url,
-                width: 160,
-                height: 160,
+                width: 200,
+                height: 200,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
             });
-
-            qrContainer.style.display = 'flex';
+            showToast('QR-код сгенерирован');
         }
 
         function downloadQR() {
             const img = document.querySelector('#qrcode img');
             if (img) {
                 const link = document.createElement('a');
-                link.download = 'qrcode.png';
+                link.download = `QR_${new Date().getTime()}.png`;
                 link.href = img.src;
                 link.click();
+            } else {
+                showToast('Сначала сгенерируйте код', 'error');
             }
         }
 
-        // --- LOCAL STORAGE HISTORY & STATS ---
-        function saveToHistory(shortUrl, longUrl, statsUrl) {
-            let history = JSON.parse(localStorage.getItem('urlHistoryV2') || '[]');
-            history.unshift({ shortUrl, longUrl, statsUrl, date: new Date().toLocaleDateString() });
-            if (history.length > 10) history.pop();
-            localStorage.setItem('urlHistoryV2', JSON.stringify(history));
+        // --- 6. HISTORY & EXPORT ---
+        function saveHistory(short, stats, original) {
+            let history = JSON.parse(localStorage.getItem('proHistory') || '[]');
+            history.unshift({ date: new Date().toLocaleString(), short, stats, original });
+            if (history.length > 20) history.pop();
+            localStorage.setItem('proHistory', JSON.stringify(history));
             renderHistory();
         }
 
         function renderHistory() {
-            const historyList = document.getElementById('historyList');
-            let history = JSON.parse(localStorage.getItem('urlHistoryV2') || '[]');
+            const tbody = document.getElementById('historyBody');
+            let history = JSON.parse(localStorage.getItem('proHistory') || '[]');
             
             if (history.length === 0) {
-                historyList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem;">История пока пуста.</li>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#7f8c8d;">История пуста</td></tr>';
                 return;
             }
 
-            historyList.innerHTML = history.map(item => `
-                <li class="history-item">
-                    <div class="history-info">
-                        <span class="history-short">${item.shortUrl}</span>
-                        <span class="history-long">${item.longUrl}</span>
-                    </div>
-                    <div class="history-actions">
-                        <button class="preset-btn" onclick="navigator.clipboard.writeText('${item.shortUrl}')">Копия</button>
-                        <a href="${item.statsUrl}" target="_blank" class="preset-btn" style="background: var(--success-color); color: white;">📊 Статистика</a>
-                    </div>
-                </li>
+            tbody.innerHTML = history.map(h => `
+                <tr>
+                    <td>${h.date.split(',')[0]}</td>
+                    <td><a href="${h.short}" target="_blank" style="color:var(--primary); font-weight:bold;">${h.short.replace('https://', '')}</a></td>
+                    <td>${h.stats ? `<a href="${h.stats}" target="_blank" style="color:var(--success);">📊 Графики</a>` : '<span style="color:#95a5a6;">Нет данных</span>'}</td>
+                    <td>
+                        <button class="tag" onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');">Копия</button>
+                    </td>
+                </tr>
             `).join('');
         }
         renderHistory();
 
-        // DONATION COPY
-        document.getElementById('copy-btc-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(document.getElementById('btc-code').textContent).then(() => {
-                alert('BTC адрес скопирован!');
+        function exportToCSV() {
+            const history = JSON.parse(localStorage.getItem('proHistory') || '[]');
+            if (history.length === 0) return showToast('Нет данных для экспорта', 'warning');
+            
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "Дата создания,Короткая ссылка,Ссылка на статистику,Оригинальная ссылка с UTM\n";
+            
+            history.forEach(row => {
+                const safeOriginal = `"${row.original.replace(/"/g, '""')}"`;
+                csvContent += `${row.date},${row.short},${row.stats || 'N/A'},${safeOriginal}\n`;
             });
-        });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `utm_history_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Файл CSV успешно скачан');
+        }
     </script>
 </body>
 </html>
