@@ -1,57 +1,677 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Shortener</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>UTM Builder & Open Shortener with Analytics</title>
+    <!-- Подключение библиотеки QR-кода -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --button-bg: #0d6efd;
+            --button-hover: #0b5ed7;
+            --border-color: #dee2e6;
+            --input-bg: #ffffff;
+            --accent-bg: #e7f1ff;
+            --success-color: #198754;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #f8f9fa;
+            --text-muted: #adb5bd;
+            --button-bg: #0d6efd;
+            --button-hover: #0b5ed7;
+            --border-color: #333333;
+            --input-bg: #2b2b2b;
+            --accent-bg: #1c2d42;
+            --success-color: #20c997;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--button-bg);
+        }
+
+        #theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .title-block {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title-block h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .title-block p {
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .presets {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn, .var-btn {
+            background: var(--accent-bg);
+            color: var(--button-bg);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .quick-vars {
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .result-box {
+            background: var(--accent-bg);
+            border: 1px dashed var(--button-bg);
+            border-radius: 8px;
+            padding: 15px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.95rem;
+            margin-top: 15px;
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        #qrcode {
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .history-list {
+            list-style: none;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            gap: 10px;
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .history-short {
+            font-weight: bold;
+            color: var(--button-bg);
+        }
+
+        .history-long {
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            background: var(--card-bg);
+            padding: 25px 15px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        .social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .twitter-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .donation {
+            margin-top: 15px;
+        }
+
+        .btc-address {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--button-bg);
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <header>
+        <div class="logo">🔗 UTM & Open Analytics Hub</div>
         <button id="theme-toggle" aria-label="Toggle Theme">
-            <span class="icon">☀️</span>
+            <span class="icon">☀️</span> <span id="theme-text">Light</span>
         </button>
     </header>
+
     <main class="container">
-        <h1>URL Shortener</h1>
-        <p>Shorten your links quickly and easily.</p>
-        
-        <div class="url-shortener">
+        <div class="title-block">
+            <h1>Генератор UTM и Сокращатель со Статистикой</h1>
+            <p>Работает на 100% бесплатно и без необходимости создавать ключи API</p>
+        </div>
+
+        <!-- 1. UTM BUILDER -->
+        <div class="card">
+            <h2>1. Конструктор UTM-меток</h2>
+            
             <div class="form-group">
-                <label for="longUrl">Enter your URL:</label>
-                <input type="url" id="longUrl" placeholder="https://example.com" required>
-                <button id="shorten-btn" class="shorten-btn">Shorten</button>
+                <label for="targetUrl">Целевой URL сайта *</label>
+                <input type="url" id="targetUrl" placeholder="https://example.com/landing" required>
             </div>
-            <div class="result" id="result" style="display: none;">
-                <label>Shortened URL:</label>
-                <div class="short-url-group">
-                    <span id="shortUrl"></span>
-                    <button id="copy-btn" class="copy-btn">Copy</button>
+
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 6px;">Быстрый выбор источника (Пресеты):</label>
+            <div class="presets">
+                <button class="preset-btn" onclick="applyPreset('facebook')">Meta / Facebook Ads</button>
+                <button class="preset-btn" onclick="applyPreset('google')">Google Ads</button>
+                <button class="preset-btn" onclick="applyPreset('tiktok')">TikTok Ads</button>
+                <button class="preset-btn" onclick="applyPreset('telegram')">Telegram</button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="utmSource">utm_source (Источник) *</label>
+                    <input type="text" id="utmSource" placeholder="facebook / google / telegram">
+                </div>
+                <div class="form-group">
+                    <label for="utmMedium">utm_medium (Тип трафика) *</label>
+                    <input type="text" id="utmMedium" placeholder="cpc / paid / cpm">
                 </div>
             </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="utmCampaign">utm_campaign (Кампания)</label>
+                    <input type="text" id="utmCampaign" placeholder="water_delivery_dnipro">
+                    <div class="quick-vars">
+                        <button class="var-btn" onclick="addMetaVar('utmCampaign', '{{campaign.name}}')">+ {{campaign.name}}</button>
+                        <button class="var-btn" onclick="addMetaVar('utmCampaign', '{{campaign.id}}')">+ {{campaign.id}}</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="utmContent">utm_content (Объявление / Креатив)</label>
+                    <input type="text" id="utmContent" placeholder="banner_discount">
+                    <div class="quick-vars">
+                        <button class="var-btn" onclick="addMetaVar('utmContent', '{{ad.name}}')">+ {{ad.name}}</button>
+                        <button class="var-btn" onclick="addMetaVar('utmContent', '{{adset.name}}')">+ {{adset.name}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="utmTerm">utm_term (Ключевое слово / Аудитория)</label>
+                <input type="text" id="utmTerm" placeholder="lookalike_1pct">
+            </div>
+
+            <div class="btn-group">
+                <button class="preset-btn" onclick="cleanInputs()">Очистить пробелы & Нижний регистр</button>
+            </div>
+
+            <div class="result-box" id="utmResult">Ссылка появится здесь после заполнения формы...</div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="copyUtmUrl()">Скопировать UTM-ссылку</button>
+            </div>
         </div>
-        
-        <p>Want to see the code? Check it out on GitHub: <a href="https://github.com/Dev-Geniy/URL-Shortener/" target="_blank">https://github.com/Dev-Geniy/URL-Shortener/</a></p>
-        <p class="note">Этот микросервис позволяет сократить длинные ссылки без регистрации и сложной настройки.</p>
+
+        <!-- 2. SHORTENER & ANALYTICS -->
+        <div class="card">
+            <h2>2. Сокращение ссылки с открытой аналитикой</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                Используется открытая служба is.gd / v.gd (без ключей). Каждая ссылка получает персональную страницу статистики переходов.
+            </p>
+            
+            <div class="form-group">
+                <label for="longUrl">Ссылка для сокращения:</label>
+                <input type="url" id="longUrl" placeholder="https://example.com/..." required>
+            </div>
+
+            <div class="btn-group">
+                <button id="shorten-btn" class="btn">Сократить и включить статистику</button>
+                <button class="btn btn-secondary" onclick="generateQRCode()">Сгенерировать QR-код</button>
+            </div>
+
+            <div class="result-box" id="shortResult" style="display: none;">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Короткая ссылка:</label>
+                <span id="shortUrl" style="font-weight: bold; color: var(--button-bg);"></span>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="preset-btn" id="copy-short-btn">Скопировать</button>
+                    <a id="statsLinkBtn" target="_blank" class="preset-btn" style="background: var(--success-color); color: white;">📊 Просмотр статистики кликов</a>
+                </div>
+            </div>
+
+            <div class="qr-container" id="qrContainer" style="display: none;">
+                <div id="qrcode"></div>
+                <button class="preset-btn" onclick="downloadQR()">Скачать QR-код (PNG)</button>
+            </div>
+        </div>
+
+        <!-- 3. HISTORY -->
+        <div class="card">
+            <h2>3. История созданных ссылок</h2>
+            <ul class="history-list" id="historyList">
+                <li style="color: var(--text-muted); font-size: 0.85rem;">История пока пуста.</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; font-size: 0.9rem;">
+            Исходный код проекта: 
+            <a href="https://github.com/Dev-Geniy/URL-Shortener/" target="_blank">Dev-Geniy/URL-Shortener</a>
+        </p>
     </main>
-    
+
     <footer class="footer">
         <div class="social">
-            <img src="https://cdn3d.iconscout.com/3d/free/thumb/free-twitter-x-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-network-social-media-pack-logos-icons-8050016.png?f=webp" alt="Twitter Icon" class="twitter-icon">
+            <img src="https://cdn3d.iconscout.com/3d/free/thumb/free-twitter-x-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-network-social-media-pack-logos-icons-8050016.png?f=webp" alt="X Icon" class="twitter-icon">
             <div>
                 <a href="https://twitter.com/HotDog850642" target="_blank">@HotDog850642</a>
-                <p>I'm a code developer. Feel free to reach out!</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Code Developer. Feel free to reach out!</p>
             </div>
         </div>
         <div class="donation">
-            <h3>For voluntary donations</h3>
+            <p style="font-weight: 600; font-size: 0.95rem;">For voluntary donations:</p>
             <div class="btc-address">
                 <span id="btc-code">bc1q3r5gad7dxc276ael06n02gek7ncm536hpndgmq</span>
-                <button class="copy-btn" data-target="btc-code">Copy</button>
+                <button class="preset-btn" id="copy-btc-btn">Copy</button>
             </div>
-            <p class="thanks">Thank you for your support!</p>
         </div>
     </footer>
-    
-    <script src="script.js"></script>
+
+    <script>
+        // --- ТЕМА (DARK / LIGHT) ---
+        const toggleButton = document.getElementById('theme-toggle');
+        const themeText = document.getElementById('theme-text');
+        const icon = toggleButton.querySelector('.icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        toggleButton.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        });
+
+        function setTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            icon.textContent = theme === 'light' ? '☀️' : '🌙';
+            themeText.textContent = theme === 'light' ? 'Light' : 'Dark';
+        }
+
+        // --- UTM BUILDER LOGIC ---
+        const targetUrlInput = document.getElementById('targetUrl');
+        const utmSourceInput = document.getElementById('utmSource');
+        const utmMediumInput = document.getElementById('utmMedium');
+        const utmCampaignInput = document.getElementById('utmCampaign');
+        const utmContentInput = document.getElementById('utmContent');
+        const utmTermInput = document.getElementById('utmTerm');
+        const utmResult = document.getElementById('utmResult');
+        const longUrlInput = document.getElementById('longUrl');
+
+        const inputs = [targetUrlInput, utmSourceInput, utmMediumInput, utmCampaignInput, utmContentInput, utmTermInput];
+        inputs.forEach(input => input.addEventListener('input', buildUtmUrl));
+
+        function buildUtmUrl() {
+            let baseUrl = targetUrlInput.value.trim();
+            if (!baseUrl) {
+                utmResult.textContent = 'Ссылка появится здесь после заполнения формы...';
+                return '';
+            }
+
+            if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+                baseUrl = 'https://' + baseUrl;
+            }
+
+            const params = new URLSearchParams();
+            if (utmSourceInput.value.trim()) params.append('utm_source', utmSourceInput.value.trim());
+            if (utmMediumInput.value.trim()) params.append('utm_medium', utmMediumInput.value.trim());
+            if (utmCampaignInput.value.trim()) params.append('utm_campaign', utmCampaignInput.value.trim());
+            if (utmContentInput.value.trim()) params.append('utm_content', utmContentInput.value.trim());
+            if (utmTermInput.value.trim()) params.append('utm_term', utmTermInput.value.trim());
+
+            const queryString = params.toString();
+            const finalUrl = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
+
+            utmResult.textContent = finalUrl;
+            longUrlInput.value = finalUrl;
+            return finalUrl;
+        }
+
+        function applyPreset(platform) {
+            if (platform === 'facebook') {
+                utmSourceInput.value = 'facebook';
+                utmMediumInput.value = 'cpc';
+                utmCampaignInput.value = '{{campaign.name}}';
+                utmContentInput.value = '{{ad.name}}';
+            } else if (platform === 'google') {
+                utmSourceInput.value = 'google';
+                utmMediumInput.value = 'cpc';
+                utmCampaignInput.value = '{campaignid}';
+                utmContentInput.value = '{creative}';
+                utmTermInput.value = '{keyword}';
+            } else if (platform === 'tiktok') {
+                utmSourceInput.value = 'tiktok';
+                utmMediumInput.value = 'cpc';
+                utmCampaignInput.value = '__CAMPAIGN_NAME__';
+                utmContentInput.value = '__AID_NAME__';
+            } else if (platform === 'telegram') {
+                utmSourceInput.value = 'telegram';
+                utmMediumInput.value = 'post';
+            }
+            buildUtmUrl();
+        }
+
+        function addMetaVar(fieldId, variable) {
+            document.getElementById(fieldId).value = variable;
+            buildUtmUrl();
+        }
+
+        function cleanInputs() {
+            [utmSourceInput, utmMediumInput, utmCampaignInput, utmContentInput, utmTermInput].forEach(input => {
+                input.value = input.value.toLowerCase().replace(/\s+/g, '_');
+            });
+            buildUtmUrl();
+        }
+
+        function copyUtmUrl() {
+            const url = buildUtmUrl();
+            if (!url) return;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('UTM-ссылка скопирована!');
+            });
+        }
+
+        // --- OPEN SHORTENER API (is.gd + Open Analytics) ---
+        const shortenBtn = document.getElementById('shorten-btn');
+        const shortResult = document.getElementById('shortResult');
+        const shortUrlSpan = document.getElementById('shortUrl');
+        const copyShortBtn = document.getElementById('copy-short-btn');
+        const statsLinkBtn = document.getElementById('statsLinkBtn');
+
+        async function shortenUrl() {
+            const urlToShorten = longUrlInput.value.trim();
+            if (!urlToShorten) {
+                alert('Пожалуйста, введите корректный URL');
+                return;
+            }
+
+            shortenBtn.textContent = 'Сокращаем и включаем статистику...';
+            shortenBtn.disabled = true;
+
+            try {
+                // Публичный CORS-прокси для бесплатного вызова API is.gd
+                const apiUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(urlToShorten)}&logstat=1`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                const result = JSON.parse(data.contents);
+
+                if (result.errorcode || !result.shorturl) {
+                    throw new Error(result.errormessage || 'Ошибка генерации');
+                }
+
+                const shortUrl = result.shorturl;
+                const statsUrl = shortUrl.replace('is.gd/', 'is.gd/stats.php?url=');
+
+                shortUrlSpan.textContent = shortUrl;
+                statsLinkBtn.href = statsUrl;
+                shortResult.style.display = 'block';
+
+                saveToHistory(shortUrl, urlToShorten, statsUrl);
+            } catch (error) {
+                alert('Не удалось сократить ссылку. Проверьте подключение к сети.');
+            } finally {
+                shortenBtn.textContent = 'Сократить и включить статистику';
+                shortenBtn.disabled = false;
+            }
+        }
+
+        shortenBtn.addEventListener('click', shortenUrl);
+
+        copyShortBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(shortUrlSpan.textContent).then(() => {
+                copyShortBtn.textContent = 'Скопировано!';
+                setTimeout(() => copyShortBtn.textContent = 'Скопировать', 2000);
+            });
+        });
+
+        // --- QR CODE LOGIC ---
+        function generateQRCode() {
+            const url = longUrlInput.value.trim();
+            if (!url) {
+                alert('Введите URL для генерации QR-кода');
+                return;
+            }
+
+            const qrContainer = document.getElementById('qrContainer');
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+
+            new QRCode(qrcodeDiv, {
+                text: url,
+                width: 160,
+                height: 160,
+            });
+
+            qrContainer.style.display = 'flex';
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            if (img) {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = img.src;
+                link.click();
+            }
+        }
+
+        // --- LOCAL STORAGE HISTORY & STATS ---
+        function saveToHistory(shortUrl, longUrl, statsUrl) {
+            let history = JSON.parse(localStorage.getItem('urlHistoryV2') || '[]');
+            history.unshift({ shortUrl, longUrl, statsUrl, date: new Date().toLocaleDateString() });
+            if (history.length > 10) history.pop();
+            localStorage.setItem('urlHistoryV2', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            let history = JSON.parse(localStorage.getItem('urlHistoryV2') || '[]');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem;">История пока пуста.</li>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(item => `
+                <li class="history-item">
+                    <div class="history-info">
+                        <span class="history-short">${item.shortUrl}</span>
+                        <span class="history-long">${item.longUrl}</span>
+                    </div>
+                    <div class="history-actions">
+                        <button class="preset-btn" onclick="navigator.clipboard.writeText('${item.shortUrl}')">Копия</button>
+                        <a href="${item.statsUrl}" target="_blank" class="preset-btn" style="background: var(--success-color); color: white;">📊 Статистика</a>
+                    </div>
+                </li>
+            `).join('');
+        }
+        renderHistory();
+
+        // DONATION COPY
+        document.getElementById('copy-btc-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('btc-code').textContent).then(() => {
+                alert('BTC адрес скопирован!');
+            });
+        });
+    </script>
 </body>
 </html>
