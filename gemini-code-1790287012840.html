@@ -7,16 +7,14 @@
     
     <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <!-- Иконки (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Библиотеки -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Tailwind CSS (CDN для единого файла) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -33,77 +31,70 @@
     </script>
 
     <style>
-        /* Кастомные стили для скроллбара и уведомлений */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        /* Скроллбары для контентной части */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
         
+        /* Уведомления */
         #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.75rem; }
-        .toast { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 500; animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .toast { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 500; animation: slideIn 0.3s ease forwards; }
         .toast.success { background: #10b981; color: white; }
         .toast.error { background: #ef4444; color: white; }
         .toast.warning { background: #f59e0b; color: white; }
         
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-        
-        /* Плавные переходы страниц */
-        .page-view { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .page-view.active { display: block; opacity: 1; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-200 transition-colors duration-300 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-200 antialiased overflow-hidden">
 
     <div id="toast-container"></div>
 
     <!-- ========================================== -->
-    <!-- VIEW 1: LANDING PAGE (Маркетинговая страница) -->
+    <!-- VIEW 1: LANDING PAGE -->
     <!-- ========================================== -->
-    <div id="view-landing" class="page-view active flex flex-col min-h-screen">
-        <nav class="border-b border-slate-200 dark:border-darkBorder bg-white/80 dark:bg-darkCard/80 backdrop-blur-md sticky top-0 z-50">
+    <div id="view-landing" class="page-view flex flex-col h-screen overflow-y-auto custom-scrollbar">
+        <nav class="border-b border-slate-200 dark:border-darkBorder bg-white/80 dark:bg-darkCard/80 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-2 text-2xl font-bold text-primary-600 dark:text-primary-500">
                     <i class="fa-solid fa-link"></i> LinkHub <span class="bg-primary-100 text-primary-700 text-xs px-2 py-1 rounded-md ml-1 dark:bg-primary-900 dark:text-primary-300">PRO</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <button onclick="toggleTheme()" class="p-2 text-slate-500 hover:text-primary-600 transition-colors"><i class="fa-solid fa-moon"></i></button>
-                    <button onclick="navigate('login')" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-sm shadow-primary-500/30">Войти в систему</button>
+                    <button onclick="navigate('login')" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-sm">Войти</button>
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-20">
-            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
-                Управляйте трафиком <br>
+        <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-12 sm:py-20">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
+                Управляйте трафиком <br class="hidden sm:block">
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">как профессионал</span>
             </h1>
-            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mb-10">
-                Единая SaaS-платформа для создания UTM-меток, шортлинков без блокировок, генерации QR-кодов и глубокой аналитики рекламных кампаний.
+            <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-10">
+                Единая SaaS-платформа для создания UTM-меток, шортлинков без блокировок, генерации QR-кодов и глубокой аналитики.
             </p>
-            <div class="flex gap-4 mb-20">
-                <button onclick="navigate('login')" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Начать бесплатно</button>
-                <button onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})" class="bg-white dark:bg-darkCard text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-darkBorder px-8 py-3.5 rounded-xl font-semibold text-lg hover:border-primary-500 transition-colors shadow-sm">Возможности</button>
+            <div class="flex flex-col sm:flex-row gap-4 mb-16">
+                <button onclick="navigate('login')" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Начать работу</button>
             </div>
 
-            <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto w-full text-left">
-                <div class="bg-white dark:bg-darkCard p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full text-left px-4">
+                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
                     <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-bullseye"></i></div>
                     <h3 class="text-xl font-bold mb-3 dark:text-white">Smart UTM Builder</h3>
-                    <p class="text-slate-500 dark:text-slate-400">Пресеты для Meta Ads Manager, Google Ads. Автоматическое форматирование, защита от ошибок и поддержка Instant Forms.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Пресеты для Meta Ads, Google Ads. Автоматическое форматирование, защита от ошибок.</p>
                 </div>
-                <div class="bg-white dark:bg-darkCard p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
                     <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-shield-halved"></i></div>
                     <h3 class="text-xl font-bold mb-3 dark:text-white">Bulletproof Shortener</h3>
-                    <p class="text-slate-500 dark:text-slate-400">Каскадная система API (Spoo.me ➔ is.gd ➔ TinyURL) гарантирует 100% срабатывание без проблем с CORS и блокировщиками.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Каскадная система API гарантирует 100% срабатывание без проблем с CORS и AdBlock.</p>
                 </div>
-                <div class="bg-white dark:bg-darkCard p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
                     <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-chart-pie"></i></div>
-                    <h3 class="text-xl font-bold mb-3 dark:text-white">Аналитика и Экспорт</h3>
-                    <p class="text-slate-500 dark:text-slate-400">Визуализация кликов, ведение истории ссылок в локальной базе и экспорт детализированных отчетов в CSV.</p>
+                    <h3 class="text-xl font-bold mb-3 dark:text-white">Аналитика и База</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Визуализация кликов, ведение истории ссылок в локальной базе и экспорт отчетов.</p>
                 </div>
             </div>
         </main>
@@ -112,59 +103,60 @@
     <!-- ========================================== -->
     <!-- VIEW 2: AUTHENTICATION (Вход) -->
     <!-- ========================================== -->
-    <div id="view-login" class="page-view flex min-h-screen items-center justify-center px-4">
-        <div class="w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-2xl">
-            <div class="text-center mb-8">
+    <div id="view-login" class="page-view hidden h-screen items-center justify-center px-4 bg-slate-50 dark:bg-darkBg">
+        <div class="w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-2xl relative">
+            <button onclick="navigate('landing')" class="absolute top-6 left-6 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="text-center mb-8 mt-4">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 mb-4 text-2xl"><i class="fa-solid fa-link"></i></div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Вход в рабочую среду</h2>
-                <p class="text-sm text-slate-500 mt-2">Введите данные вашего проекта</p>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Вход в систему</h2>
             </div>
             
             <form onsubmit="handleLogin(event)" class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium mb-2">Рабочий Email</label>
-                    <input type="email" id="login-email" value="admin@skysource.com.ua" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all" required>
+                    <input type="email" id="login-email" value="admin@skysource.com.ua" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-2">Пароль</label>
-                    <input type="password" value="12345678" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all" required>
+                    <input type="password" value="12345678" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
                 </div>
                 <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-primary-500/30 flex justify-center items-center gap-2">
                     Войти в Дашборд <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
-            <div class="mt-6 text-center text-sm text-slate-500">
-                <a href="#" onclick="navigate('landing')" class="hover:text-primary-600 transition-colors">← Назад на главную</a>
-            </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- VIEW 3: MAIN DASHBOARD (SaaS Интерфейс) -->
+    <!-- VIEW 3: MAIN DASHBOARD (SaaS Структура) -->
     <!-- ========================================== -->
-    <div id="view-dashboard" class="page-view bg-slate-50 dark:bg-darkBg min-h-screen">
+    <div id="view-dashboard" class="page-view hidden h-screen bg-slate-50 dark:bg-darkBg flex overflow-hidden">
         
-        <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-darkCard border-r border-slate-200 dark:border-darkBorder flex flex-col z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
-            <div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-darkBorder">
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar (Фиксированный) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-darkCard border-r border-slate-200 dark:border-darkBorder flex flex-col z-50 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 flex-shrink-0 shadow-xl md:shadow-none">
+            <div class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-darkBorder flex-shrink-0">
                 <span class="text-xl font-bold text-primary-600"><i class="fa-solid fa-link"></i> LinkHub</span>
+                <button class="md:hidden text-slate-500 hover:text-slate-800 dark:hover:text-white" onclick="toggleSidebar()"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <button onclick="switchTab('tab-generator', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 tab-btn">
+            <nav class="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 space-y-2">
+                <button onclick="switchTab('tab-generator', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 tab-btn transition-colors">
                     <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Создание ссылок
                 </button>
-                <button onclick="switchTab('tab-history', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors tab-btn">
+                <button onclick="switchTab('tab-history', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
                     <i class="fa-solid fa-list-ul w-5 text-center"></i> База ссылок
                 </button>
-                <button onclick="switchTab('tab-analytics', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors tab-btn">
+                <button onclick="switchTab('tab-analytics', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i> Аналитика
                 </button>
             </nav>
             
-            <div class="p-4 border-t border-slate-200 dark:border-darkBorder">
+            <div class="p-4 border-t border-slate-200 dark:border-darkBorder flex-shrink-0">
                 <div class="flex items-center gap-3 px-2 py-2">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary-500 to-purple-500 flex items-center justify-center text-white font-bold uppercase" id="user-avatar">S</div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary-500 to-purple-500 flex items-center justify-center text-white font-bold uppercase flex-shrink-0" id="user-avatar">S</div>
                     <div class="overflow-hidden">
                         <p class="text-sm font-semibold text-slate-900 dark:text-white truncate" id="user-display-name">Workspace</p>
                         <p class="text-xs text-slate-500">PRO План</p>
@@ -173,166 +165,175 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <div class="md:pl-64 flex flex-col min-h-screen">
-            <!-- Topbar -->
-            <header class="h-16 bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border-b border-slate-200 dark:border-darkBorder flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
-                <button class="md:hidden text-slate-500 p-2" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                <h2 class="text-lg font-semibold dark:text-white" id="header-title">Генератор ссылок</h2>
-                <div class="flex items-center gap-3">
+        <!-- Main Content Column -->
+        <div class="flex-1 flex flex-col min-w-0 relative">
+            
+            <!-- Topbar (Фиксированный в колонке) -->
+            <header class="h-16 bg-white dark:bg-darkCard border-b border-slate-200 dark:border-darkBorder flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-30">
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold dark:text-white truncate" id="header-title">Генератор ссылок</h2>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
                     <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary-500 transition-colors"><i class="fa-solid fa-moon"></i></button>
                     <button onclick="navigate('landing')" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-colors" title="Выход"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
                 </div>
             </header>
 
-            <!-- ТАБ 1: ГЕНЕРАТОР (Основной инструмент) -->
-            <main id="tab-generator" class="tab-content active flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+            <!-- Скроллируемая область контента (Скроллится только этот блок) -->
+            <main class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative">
                 
-                <!-- UTM Builder Card -->
-                <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm mb-8 overflow-hidden">
-                    <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-5 flex flex-wrap gap-4 justify-between items-center">
-                        <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">1</span> Настройка UTM</h3>
-                        <div class="flex gap-2">
-                            <button onclick="applyPreset('meta')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors">🔥 Meta Ads</button>
-                            <button onclick="applyPreset('google')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors">Google Ads</button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 space-y-5">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1.5">Целевая ссылка <span class="text-red-500">*</span></label>
-                            <input type="url" id="targetUrl" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none transition-shadow" placeholder="https://skysource.com.ua/promo">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-sm font-semibold mb-1.5">Источник (utm_source) <span class="text-red-500">*</span></label>
-                                <input type="text" id="utmSource" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="facebook / google">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold mb-1.5">Тип (utm_medium) <span class="text-red-500">*</span></label>
-                                <input type="text" id="utmMedium" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="lead_form / cpc">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-sm font-semibold mb-1.5">Кампания (utm_campaign)</label>
-                                <input type="text" id="utmCampaign" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="pump_18L_dnipro">
-                                <div class="flex gap-2 mt-2">
-                                    <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded cursor-pointer hover:text-primary-500" onclick="insertVar('utmCampaign', '{{campaign.name}}')">{{campaign.name}}</span>
+                <div class="max-w-5xl mx-auto w-full">
+                    <!-- ТАБ 1: ГЕНЕРАТОР -->
+                    <div id="tab-generator" class="tab-content block">
+                        <!-- UTM Builder Card -->
+                        <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm mb-6 overflow-hidden">
+                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
+                                <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">1</span> Конструктор UTM</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="applyPreset('meta')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors shadow-sm">🔥 Meta Ads</button>
+                                    <button onclick="applyPreset('google')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors shadow-sm">Google Ads</button>
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold mb-1.5">Контент (utm_content)</label>
-                                <input type="text" id="utmContent" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="banner_v1">
-                                <div class="flex gap-2 mt-2">
-                                    <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded cursor-pointer hover:text-primary-500" onclick="insertVar('utmContent', '{{ad.name}}')">{{ad.name}}</span>
+                            
+                            <div class="p-4 sm:p-6 space-y-5">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1.5">Целевая ссылка <span class="text-red-500">*</span></label>
+                                    <input type="url" id="targetUrl" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none transition-shadow" placeholder="https://skysource.com.ua/">
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Источник (utm_source) <span class="text-red-500">*</span></label>
+                                        <input type="text" id="utmSource" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="facebook / google">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Тип (utm_medium) <span class="text-red-500">*</span></label>
+                                        <input type="text" id="utmMedium" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="lead_form / cpc">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Кампания (utm_campaign)</label>
+                                        <input type="text" id="utmCampaign" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="pump_18L_dnipro">
+                                        <div class="flex gap-2 mt-2">
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmCampaign', '{{campaign.name}}')">{{campaign.name}}</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Контент (utm_content)</label>
+                                        <input type="text" id="utmContent" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="banner_v1">
+                                        <div class="flex gap-2 mt-2">
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmContent', '{{ad.name}}')">{{ad.name}}</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-slate-100 dark:border-darkBorder flex justify-between items-center">
+                                    <button onclick="cleanInputs()" class="text-sm text-slate-500 hover:text-primary-600 font-medium flex items-center gap-2 transition-colors"><i class="fa-solid fa-broom"></i> Нормализация (_)</button>
+                                </div>
+
+                                <!-- Result Box (Исправлен баг с высотой и переносом текста) -->
+                                <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-4">
+                                    <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Сгенерированная ссылка</p>
+                                    <div id="utmResult" class="font-mono text-sm break-all text-slate-800 dark:text-slate-300 mb-4 min-h-[2.5rem] bg-white dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-700">Введите URL для начала...</div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="copyText('utmResult')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:border-primary-500 transition-colors shadow-sm"><i class="fa-regular fa-copy mr-1"></i> Копировать</button>
+                                        <button onclick="transferToShortener()" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2">Сократить <i class="fa-solid fa-arrow-down"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-slate-100 dark:border-darkBorder flex justify-between items-center">
-                            <button onclick="cleanInputs()" class="text-sm text-slate-500 hover:text-primary-600 font-medium flex items-center gap-2"><i class="fa-solid fa-broom"></i> Нормализация (_)</button>
-                        </div>
+                        <!-- Shortener & QR Card -->
+                        <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden mb-8">
+                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5">
+                                <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">2</span> Шортлинк и QR</h3>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6">
+                                <input type="url" id="longUrl" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none mb-4" placeholder="Вставьте длинную ссылку сюда...">
+                                
+                                <div class="flex flex-wrap gap-3 mb-6">
+                                    <button id="btnShorten" onclick="processShorten()" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Создать короткую</button>
+                                    <button onclick="generateQR()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
+                                </div>
 
-                        <!-- Result Box -->
-                        <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-4">
-                            <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Сгенерированная ссылка</p>
-                            <div id="utmResult" class="font-mono text-sm word-break break-all text-slate-800 dark:text-slate-300 mb-4 h-10">Введите URL для начала...</div>
-                            <div class="flex gap-3">
-                                <button onclick="copyText('utmResult')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:border-primary-500 transition-colors"><i class="fa-regular fa-copy mr-1"></i> Копировать</button>
-                                <button onclick="transferToShortener()" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2">Сократить <i class="fa-solid fa-arrow-down"></i></button>
+                                <!-- Shortener Result -->
+                                <div id="shortResultBlock" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-xl p-5 relative">
+                                    <p class="text-xs text-green-700 dark:text-green-400 font-semibold uppercase mb-1">Успешно</p>
+                                    <strong id="shortUrlText" class="text-lg sm:text-xl text-green-800 dark:text-green-300 block mb-4 break-all"></strong>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="copyText('shortUrlText', true)" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-medium hover:shadow-sm transition-shadow">Копировать</button>
+                                        <a id="statsLink" href="#" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">Аналитика кликов ↗</a>
+                                    </div>
+                                </div>
+
+                                <!-- QR Result (Фон всегда белый для сканера) -->
+                                <div id="qrResultBlock" class="hidden mt-6 text-center">
+                                    <div class="inline-block p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                                        <div id="qrcode"></div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button onclick="downloadQR()" class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"><i class="fa-solid fa-download"></i> Скачать PNG</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Shortener & QR Card -->
-                <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden">
-                    <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-5">
-                        <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">2</span> Шортлинк и QR-код</h3>
+                    <!-- ТАБ 2: ИСТОРИЯ (Исправлен адаптив таблицы) -->
+                    <div id="tab-history" class="tab-content hidden">
+                        <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm flex flex-col">
+                            <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl">
+                                <h3 class="font-bold text-lg">База данных ссылок</h3>
+                                <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"><i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">Экспорт CSV</span></button>
+                            </div>
+                            <!-- Обертка для мобильного горизонтального скролла -->
+                            <div class="overflow-x-auto custom-scrollbar">
+                                <table class="w-full text-left border-collapse min-w-[600px]">
+                                    <thead class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-darkBorder">
+                                        <tr>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Дата</th>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Шортлинк</th>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Аналитика</th>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase text-right">Копия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-darkBorder text-sm">
+                                        <!-- JS Inject -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="p-6">
-                        <input type="url" id="longUrl" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none mb-4" placeholder="Вставьте длинную ссылку сюда...">
+
+                    <!-- ТАБ 3: АНАЛИТИКА -->
+                    <div id="tab-analytics" class="tab-content hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
+                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Всего ссылок</p>
+                                <h4 class="text-3xl font-bold" id="stat-total">0</h4>
+                            </div>
+                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Активные</p>
+                                <h4 class="text-3xl font-bold text-primary-600">3</h4>
+                            </div>
+                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус API</p>
+                                <h4 class="text-xl sm:text-2xl font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-circle-check text-lg"></i> Online</h4>
+                            </div>
+                        </div>
                         
-                        <div class="flex flex-wrap gap-3 mb-6">
-                            <button id="btnShorten" onclick="processShorten()" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Сгенерировать</button>
-                            <button onclick="generateQR()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2"><i class="fa-solid fa-qrcode"></i> QR-код</button>
-                        </div>
-
-                        <!-- Shortener Result -->
-                        <div id="shortResultBlock" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 relative">
-                            <p class="text-xs text-green-700 dark:text-green-400 font-semibold uppercase mb-1">Готово</p>
-                            <strong id="shortUrlText" class="text-xl text-green-800 dark:text-green-300 block mb-4"></strong>
-                            <div class="flex gap-3">
-                                <button onclick="copyText('shortUrlText', true)" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-4 py-1.5 rounded-lg text-sm font-medium hover:shadow-sm">Копировать</button>
-                                <a id="statsLink" href="#" target="_blank" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-green-700">Статистика кликов ↗</a>
+                        <div class="bg-white dark:bg-darkCard p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
+                            <h3 class="font-bold text-lg mb-6">Активность (Демо)</h3>
+                            <div class="w-full h-64 sm:h-80 relative">
+                                <canvas id="analyticsChart"></canvas>
                             </div>
                         </div>
-
-                        <!-- QR Result -->
-                        <div id="qrResultBlock" class="hidden mt-6 text-center">
-                            <div class="inline-block p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                                <div id="qrcode"></div>
-                            </div>
-                            <div class="mt-4">
-                                <button onclick="downloadQR()" class="text-sm font-medium text-primary-600 hover:text-primary-700"><i class="fa-solid fa-download"></i> Скачать PNG</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- ТАБ 2: ИСТОРИЯ ССЫЛОК -->
-            <main id="tab-history" class="tab-content flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
-                <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden flex flex-col h-[calc(100vh-140px)]">
-                    <div class="p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-                        <h3 class="font-bold text-lg">База данных ссылок</h3>
-                        <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i class="fa-solid fa-file-csv"></i> Экспорт CSV</button>
-                    </div>
-                    <div class="flex-1 overflow-auto p-0">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50 sticky top-0 border-b border-slate-200 dark:border-darkBorder shadow-sm">
-                                <tr>
-                                    <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Дата</th>
-                                    <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Шортлинк</th>
-                                    <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Аналитика</th>
-                                    <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-darkBorder text-sm">
-                                <!-- JS Inject -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-
-            <!-- ТАБ 3: АНАЛИТИКА (Визуализация) -->
-            <main id="tab-analytics" class="tab-content flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Всего ссылок</p>
-                        <h4 class="text-3xl font-bold" id="stat-total">0</h4>
-                    </div>
-                    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Активные кампании</p>
-                        <h4 class="text-3xl font-bold text-primary-600">3</h4>
-                    </div>
-                    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус API</p>
-                        <h4 class="text-xl font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-circle-check text-sm"></i> Online</h4>
-                    </div>
-                </div>
-                
-                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                    <h3 class="font-bold text-lg mb-6">Активность (Демо)</h3>
-                    <div class="w-full h-72">
-                        <canvas id="analyticsChart"></canvas>
                     </div>
                 </div>
             </main>
@@ -340,13 +341,20 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SCRIPTS (Логика SaaS) -->
+    <!-- SCRIPTS -->
     <!-- ========================================== -->
     <script>
-        // --- 1. РОУТИНГ И НАВИГАЦИЯ ---
+        // --- РОУТИНГ И ИНТЕРФЕЙС ---
+        // Использование hidden вместо CSS opacity предотвращает прыжки DOM
         function navigate(viewId) {
-            document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
-            document.getElementById(`view-${viewId}`).classList.add('active');
+            document.querySelectorAll('.page-view').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            
+            const target = document.getElementById(`view-${viewId}`);
+            target.classList.remove('hidden');
+            target.classList.add('flex'); // Окна используют flex (column или center)
             
             if (viewId === 'dashboard') {
                 renderHistory();
@@ -357,17 +365,23 @@
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
-            const name = email.split('@')[0];
+            const name = email.split('@')[0] || 'User';
             document.getElementById('user-display-name').textContent = name;
             document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-            showToast(`Добро пожаловать, ${name}!`, 'success');
+            showToast(`Успешный вход: ${name}`, 'success');
             navigate('dashboard');
         }
 
         function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            // Переключаем контент (жестко display: block / none через Tailwind классы)
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
             
+            // Стилизуем кнопки сайдбара
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
                 btn.classList.add('text-slate-600', 'dark:text-slate-400');
@@ -375,14 +389,27 @@
             btnElement.classList.remove('text-slate-600', 'dark:text-slate-400');
             btnElement.classList.add('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
             
+            // Обновляем заголовок
             const titles = { 'tab-generator': 'Генератор ссылок', 'tab-history': 'База ссылок', 'tab-analytics': 'Аналитика' };
             document.getElementById('header-title').textContent = titles[tabId];
             
-            if (window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
-            if (tabId === 'tab-analytics') initChart();
+            // Закрываем сайдбар на мобильных
+            if (window.innerWidth < 768) toggleSidebar();
+            if (tabId === 'tab-analytics') setTimeout(initChart, 50); // Небольшая задержка для рендера канваса
         }
 
-        // --- 2. УВЕДОМЛЕНИЯ (Toasts) ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                overlay.classList.add('hidden');
+            } else {
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        // --- УВЕДОМЛЕНИЯ ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -393,18 +420,18 @@
             setTimeout(() => { toast.style.animation = 'fadeOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- 3. ТЕМНАЯ ТЕМА ---
+        // --- ТЕМНАЯ ТЕМА ---
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('dark');
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-            if(window.myChart) initChart(); // Перерисовка графика под тему
+            if(window.myChart) initChart();
         }
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
 
-        // --- 4. ЛОГИКА UTM ГЕНЕРАТОРА ---
+        // --- UTM ЛОГИКА ---
         const inputs = ['targetUrl', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent'].map(id => document.getElementById(id));
         inputs.forEach(el => el.addEventListener('input', updateUtmResult));
 
@@ -434,7 +461,7 @@
         function cleanInputs() {
             inputs.slice(1).forEach(el => el.value = el.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_{}.]/g, ''));
             updateUtmResult();
-            showToast('Метки отформатированы');
+            showToast('Метки нормализованы');
         }
 
         function applyPreset(type) {
@@ -451,18 +478,18 @@
 
         function transferToShortener() {
             const url = updateUtmResult();
-            if(!url || url === 'Введите URL для начала...') return showToast('Заполните целевую ссылку', 'error');
+            if(!url || url === 'Введите URL для начала...') return showToast('Заполните базовую ссылку', 'error');
             document.getElementById('longUrl').value = url;
             document.getElementById('longUrl').scrollIntoView({behavior: 'smooth', block: 'center'});
-            showToast('Перенесено в шортенер');
+            showToast('Перенесено в генератор ссылок');
         }
 
         function copyText(elementId, isInput = false) {
             const text = isInput ? document.getElementById(elementId).innerText : document.getElementById(elementId).textContent;
-            if(text && text !== 'Введите URL для начала...') { navigator.clipboard.writeText(text); showToast('Скопировано в буфер'); }
+            if(text && text !== 'Введите URL для начала...') { navigator.clipboard.writeText(text); showToast('Успешно скопировано'); }
         }
 
-        // --- 5. КАСКАДНЫЙ СОКРАЩАТЕЛЬ API ---
+        // --- СОКРАЩАТЕЛЬ ---
         async function processShorten() {
             const longUrl = document.getElementById('longUrl').value.trim();
             if (!longUrl) return showToast('Вставьте длинную ссылку', 'error');
@@ -473,18 +500,16 @@
             btn.disabled = true;
 
             try {
-                // Шаг 1: Spoo.me
                 const params = new URLSearchParams(); params.append('url', longUrl);
-                const res1 = await fetch('https://spoo.me/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }, body: params });
-                if (res1.ok) {
-                    const data = await res1.json();
+                const res = await fetch('https://spoo.me/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }, body: params });
+                if (res.ok) {
+                    const data = await res.json();
                     showShortResult(data.short_url, `https://spoo.me/stats/${data.short_url.split('/').pop()}`, longUrl);
                     return; 
                 }
             } catch(e) {}
 
             try {
-                // Шаг 2: is.gd proxy
                 const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
                 const res2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(isGdUrl)}`);
                 if (res2.ok) {
@@ -495,34 +520,35 @@
 
             btn.innerHTML = originalText;
             btn.disabled = false;
-            showToast('Ошибка сети. Проверьте блокировщики рекламы.', 'error');
+            showToast('Ошибка API. Проверьте блокировщики', 'error');
         }
 
         function showShortResult(short, stats, original) {
             document.getElementById('shortResultBlock').classList.remove('hidden');
             document.getElementById('shortUrlText').innerText = short;
             const statsBtn = document.getElementById('statsLink');
-            if (stats) { statsBtn.style.display = 'inline-block'; statsBtn.href = stats; } else { statsBtn.style.display = 'none'; }
+            if (stats) { statsBtn.style.display = 'inline-flex'; statsBtn.href = stats; } else { statsBtn.style.display = 'none'; }
             
             saveHistory(short, stats, original);
-            showToast('Успешно сокращено!');
+            showToast('Ссылка сокращена');
             
             const btn = document.getElementById('btnShorten');
-            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Сгенерировать';
+            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Создать короткую';
             btn.disabled = false;
         }
 
-        // --- 6. QR КОД ---
-        let qrcodeObj = null;
+        // --- QR КОД ---
         function generateQR() {
             const url = document.getElementById('longUrl').value.trim();
             if (!url) return showToast('Введите ссылку', 'error');
             document.getElementById('qrResultBlock').classList.remove('hidden');
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
-            qrcodeObj = new QRCode(qrDiv, { text: url, width: 180, height: 180, colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-            showToast('QR-код готов');
+            // Фиксируем белые цвета для корректного сканирования всегда
+            new QRCode(qrDiv, { text: url, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+            showToast('QR-код сгенерирован');
         }
+        
         function downloadQR() {
             const img = document.querySelector('#qrcode img');
             if (img) {
@@ -530,11 +556,11 @@
             }
         }
 
-        // --- 7. ИСТОРИЯ И ЭКСПОРТ ---
+        // --- БАЗА И ЭКСПОРТ ---
         function saveHistory(short, stats, original) {
             let history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
             history.unshift({ date: new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}), short, stats, original });
-            if (history.length > 50) history.pop();
+            if (history.length > 100) history.pop();
             localStorage.setItem('saasHistory', JSON.stringify(history));
             renderHistory();
         }
@@ -550,12 +576,12 @@
             }
 
             tbody.innerHTML = history.map(h => `
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td class="py-3 px-6 whitespace-nowrap">${h.date}</td>
-                    <td class="py-3 px-6 font-medium text-primary-600"><a href="${h.short}" target="_blank">${h.short.replace('https://', '')}</a></td>
-                    <td class="py-3 px-6">${h.stats ? `<a href="${h.stats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Статистика</a>` : '<span class="text-slate-400">N/A</span>'}</td>
-                    <td class="py-3 px-6">
-                        <button onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800"><i class="fa-regular fa-copy"></i></button>
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+                    <td class="py-4 px-6 whitespace-nowrap">${h.date}</td>
+                    <td class="py-4 px-6 font-medium text-primary-600"><a href="${h.short}" target="_blank">${h.short.replace('https://', '')}</a></td>
+                    <td class="py-4 px-6">${h.stats ? `<a href="${h.stats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Открыть</a>` : '<span class="text-slate-400">N/A</span>'}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800 transition-colors"><i class="fa-regular fa-copy"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -563,22 +589,22 @@
 
         function exportToCSV() {
             const history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
-            if (history.length === 0) return showToast('Нет данных', 'warning');
+            if (history.length === 0) return showToast('База данных пуста', 'warning');
             
             let csvContent = "data:text/csv;charset=utf-8,\uFEFFДата,Короткая ссылка,Статистика,Оригинальный URL\n";
             history.forEach(r => csvContent += `${r.date},${r.short},${r.stats || ''},"${r.original}"\n`);
             
             const link = document.createElement("a");
             link.href = encodeURI(csvContent);
-            link.download = `linkhub_export_${Date.now()}.csv`;
+            link.download = `linkhub_database_${Date.now()}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            showToast('Экспорт завершен');
+            showToast('Файл загружается');
         }
 
-        // --- 8. АНАЛИТИКА (CHART.JS) ---
+        // --- ГРАФИКИ ---
         function initChart() {
             const ctx = document.getElementById('analyticsChart');
-            if(!ctx) return;
+            if(!ctx || !ctx.offsetParent) return; // Рендерим только если видим
             if(window.myChart) window.myChart.destroy();
             
             const isDark = document.documentElement.classList.contains('dark');
@@ -591,7 +617,7 @@
                     labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
                     datasets: [{
                         label: 'Переходы по ссылкам',
-                        data: [12, 19, 15, 25, 22, 30, 28],
+                        data: [12, 28, 15, 35, 22, 40, 28],
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         borderWidth: 3,
@@ -600,19 +626,26 @@
                         pointBackgroundColor: '#ffffff',
                         pointBorderColor: '#3b82f6',
                         pointBorderWidth: 2,
-                        pointRadius: 4
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
+                    interaction: { intersect: false, mode: 'index' },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
-                        x: { grid: { display: false }, ticks: { color: textColor } }
+                        y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, padding: 10 } },
+                        x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor, padding: 10 } }
                     }
                 }
             });
         }
+        
+        // Инициализация при старте (если дашборд открыт по умолчанию)
+        window.addEventListener('resize', () => {
+            if(document.getElementById('tab-analytics').classList.contains('block')) initChart();
+        });
     </script>
 </body>
 </html>
