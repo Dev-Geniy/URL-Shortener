@@ -85,6 +85,7 @@
         .toast { background: var(--card-bg); border-left: 4px solid var(--primary); color: var(--text-color); padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; font-weight: 600; animation: slideIn 0.3s ease forwards; }
         .toast.error { border-left-color: var(--danger); }
         .toast.success { border-left-color: var(--success); }
+        .toast.warning { border-left-color: var(--warning); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
@@ -236,12 +237,13 @@
     </footer>
 
     <script>
-        // --- 1. TOAST NOTIFICATIONS (Уведомления) ---
+        // --- TOAST NOTIFICATIONS ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = type === 'success' ? `✅ ${message}` : `⚠️ ${message}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : '⚡';
+            toast.innerHTML = `${icon} ${message}`;
             container.appendChild(toast);
             
             setTimeout(() => {
@@ -250,7 +252,7 @@
             }, 3000);
         }
 
-        // --- 2. THEME ENGINE ---
+        // --- THEME ENGINE ---
         const themeBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const currentTheme = localStorage.getItem('theme') || 'light';
@@ -262,7 +264,7 @@
             localStorage.setItem('theme', newTheme);
         });
 
-        // --- 3. UTM BUILDER LOGIC ---
+        // --- UTM BUILDER LOGIC ---
         const inputs = ['targetUrl', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm'].map(id => document.getElementById(id));
         inputs.forEach(el => el.addEventListener('input', updateUtmResult));
 
@@ -304,7 +306,7 @@
         function applyPreset(type) {
             if(type === 'meta') {
                 inputs[1].value = 'facebook';
-                inputs[2].value = 'lead_form'; // Оптимизировано под Instant Forms
+                inputs[2].value = 'lead_form';
                 inputs[3].value = '{{campaign.name}}';
                 inputs[4].value = '{{ad.name}}';
             } else if (type === 'google') {
@@ -344,60 +346,67 @@
             }
         }
 
-        // --- 4. BULLETPROOF SHORTENER (JSONP API БЕЗ CORS) ---
-        // Использование JSONP позволяет делать запросы к is.gd без блокировок прокси-серверов.
-        function fetchIsGdJSONP(url) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'isgd_cb_' + Math.round(100000 * Math.random());
-                const script = document.createElement('script');
-                
-                // Таймаут 5 секунд на случай падения is.gd
-                const timeout = setTimeout(() => {
-                    cleanup();
-                    reject(new Error('Timeout'));
-                }, 5000);
-
-                function cleanup() {
-                    if(document.body.contains(script)) document.body.removeChild(script);
-                    delete window[callbackName];
-                }
-
-                window[callbackName] = function(data) {
-                    clearTimeout(timeout);
-                    cleanup();
-                    if (data.errorcode) reject(new Error(data.errormessage));
-                    else resolve(data);
-                };
-
-                script.src = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}&logstat=1&callback=${callbackName}`;
-                document.body.appendChild(script);
-            });
-        }
-
+        // --- BULLETPROOF CASCADING SHORTENER ---
         async function processShorten() {
             const longUrl = document.getElementById('longUrl').value.trim();
             if (!longUrl) return showToast('Введите ссылку для сокращения', 'error');
             
             const btn = document.getElementById('btnShorten');
-            btn.innerHTML = '⏳ Обработка...';
+            btn.innerHTML = '⏳ Создаем короткую ссылку...';
             btn.disabled = true;
 
             try {
-                // Основной метод: JSONP (не блокируется CORS, дает статистику)
-                const data = await fetchIsGdJSONP(longUrl);
-                showShortResult(data.shorturl, data.shorturl.replace('is.gd/', 'is.gd/stats.php?url='), longUrl);
-            } catch (e) {
-                console.warn('is.gd недоступен, используем резервный API', e);
-                // Резервный метод: TinyURL (работает через стандартный fetch)
-                try {
-                    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-                    if(!res.ok) throw new Error('TinyURL failed');
-                    const shortUrl = await res.text();
-                    showShortResult(shortUrl, null, longUrl);
-                    showToast('Сгенерировано через резервный сервер', 'warning');
-                } catch (err) {
-                    showToast('Ошибка сети. Проверьте подключение.', 'error');
+                // ШАГ 1: Попытка через Spoo.me (Основной)
+                const params = new URLSearchParams();
+                params.append('url', longUrl);
+                
+                const res1 = await fetch('https://spoo.me/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                    body: params
+                });
+                
+                if (res1.ok) {
+                    const data = await res1.json();
+                    const shortUrl = data.short_url;
+                    const alias = shortUrl.split('/').pop();
+                    showShortResult(shortUrl, `https://spoo.me/stats/${alias}`, longUrl);
+                    return; 
                 }
+            } catch(e) { console.warn('Spoo.me bypass:', e); }
+
+            try {
+                // ШАГ 2: Попытка через is.gd + RAW Proxy (Резерв 1)
+                const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(isGdUrl)}`;
+                
+                const res2 = await fetch(proxyUrl);
+                if (res2.ok) {
+                    const data2 = await res2.json();
+                    if (data2.shorturl) {
+                        showShortResult(data2.shorturl, data2.shorturl.replace('is.gd/', 'is.gd/stats.php?url='), longUrl);
+                        return;
+                    }
+                }
+            } catch(e) { console.warn('is.gd proxy bypass:', e); }
+
+            try {
+                // ШАГ 3: Попытка через TinyURL + RAW Proxy (Резерв 2)
+                const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`;
+                const res3 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(tinyUrl)}`);
+                
+                if (res3.ok) {
+                    const short3 = await res3.text();
+                    if (short3.startsWith('http')) {
+                        showShortResult(short3, null, longUrl);
+                        showToast('Создано через резервный шлюз', 'warning');
+                        return;
+                    }
+                }
+                throw new Error('All APIs exhausted');
+            } catch(e) {
+                console.error('All methods failed:', e);
+                showToast('Ошибка сети! Отключите VPN или AdBlock.', 'error');
             } finally {
                 btn.innerHTML = '🚀 Сократить (с аналитикой)';
                 btn.disabled = false;
@@ -413,14 +422,14 @@
                 statsBtn.style.display = 'inline-flex';
                 statsBtn.href = stats;
             } else {
-                statsBtn.style.display = 'none'; // TinyURL не дает публичной статистики
+                statsBtn.style.display = 'none';
             }
             
             saveHistory(short, stats, original);
             showToast('Ссылка успешно сокращена!');
         }
 
-        // --- 5. QR CODE GENERATOR ---
+        // --- QR CODE GENERATOR ---
         let qrcodeObj = null;
         function generateQR() {
             const url = document.getElementById('longUrl').value.trim();
@@ -453,7 +462,7 @@
             }
         }
 
-        // --- 6. HISTORY & EXPORT ---
+        // --- HISTORY & EXPORT ---
         function saveHistory(short, stats, original) {
             let history = JSON.parse(localStorage.getItem('proHistory') || '[]');
             history.unshift({ date: new Date().toLocaleString(), short, stats, original });
@@ -475,7 +484,7 @@
                 <tr>
                     <td>${h.date.split(',')[0]}</td>
                     <td><a href="${h.short}" target="_blank" style="color:var(--primary); font-weight:bold;">${h.short.replace('https://', '')}</a></td>
-                    <td>${h.stats ? `<a href="${h.stats}" target="_blank" style="color:var(--success);">📊 Графики</a>` : '<span style="color:#95a5a6;">Нет данных</span>'}</td>
+                    <td>${h.stats ? `<a href="${h.stats}" target="_blank" style="color:var(--success);">📊 Статистика</a>` : '<span style="color:#95a5a6;">Нет данных</span>'}</td>
                     <td>
                         <button class="tag" onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');">Копия</button>
                     </td>
