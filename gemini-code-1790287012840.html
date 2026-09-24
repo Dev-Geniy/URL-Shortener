@@ -2,23 +2,25 @@
 <html lang="ru" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkHub Pro | Маркетинговая платформа</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <title>LinkHub Pro | Маркетинговая платформа SkySource</title>
     
-    <!-- Шрифты -->
+    <!-- PWA Фавикон (Капля воды без фона) -->
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233b82f6"><path d="M12 2c-5.33 7.33-8 11.33-8 15a8 8 0 1016 0c0-3.67-2.67-7.67-8-15z"/></svg>' type="image/svg+xml">
+    
+    <!-- Шрифты и Иконки -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Иконки (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Библиотеки -->
+    <!-- Библиотеки[cite: 5] -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
+        // Конфигурация Tailwind[cite: 5]
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -34,6 +36,7 @@
     </script>
 
     <style>
+        /* Стили скроллбара и тостов[cite: 5] */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -47,34 +50,17 @@
         
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+        /* Стили для подсказок */
+        .tooltip-icon { cursor: help; color: #94a3b8; transition: color 0.2s; }
+        .tooltip-icon:hover { color: #3b82f6; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-200 antialiased overflow-hidden">
 
     <div id="toast-container"></div>
 
-    <!-- Модальное окно: Лимит достигнут -->
-    <div id="share-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity">
-        <div class="bg-white dark:bg-darkCard p-8 rounded-3xl max-w-md w-full text-center shadow-2xl border border-slate-200 dark:border-darkBorder">
-            <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fa-solid fa-gift"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3 dark:text-white">Лимит исчерпан (3/3)</h3>
-            <p class="mb-8 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Вы создали 3 ссылки — это максимум для базового тарифа. Чтобы получить <b>безлимитный доступ</b> к генерации шортлинков и QR-кодов, просто поделитесь нашим сервисом с коллегами!
-            </p>
-            <div class="space-y-3">
-                <button onclick="shareService()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-share-nodes"></i> Поделиться и снять лимит
-                </button>
-                <button onclick="closeShareModal()" class="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3.5 rounded-xl font-medium transition-all">
-                    Отмена
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIEW 1: LANDING PAGE -->
+    <!-- VIEW 1: LANDING PAGE[cite: 5] -->
     <div id="view-landing" class="page-view flex flex-col h-screen overflow-y-auto custom-scrollbar">
         <nav class="border-b border-slate-200 dark:border-darkBorder bg-white/80 dark:bg-darkCard/80 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -82,6 +68,7 @@
                     <i class="fa-solid fa-link"></i> LinkHub <span class="bg-primary-100 text-primary-700 text-xs px-2 py-1 rounded-md ml-1 dark:bg-primary-900 dark:text-primary-300">PRO</span>
                 </div>
                 <div class="flex items-center gap-4">
+                    <button onclick="installPWA()" id="installBtn" class="hidden text-sm bg-slate-900 text-white px-3 py-1.5 rounded-lg font-medium"><i class="fa-solid fa-download"></i> Установить App</button>
                     <button onclick="toggleTheme()" class="p-2 text-slate-500 hover:text-primary-600 transition-colors"><i class="fa-solid fa-moon"></i></button>
                     <button onclick="navigate('login')" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-sm flex items-center gap-2">Войти <i class="fa-solid fa-lock text-xs"></i></button>
                 </div>
@@ -89,30 +76,30 @@
         </nav>
 
         <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-12 sm:py-20">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-sm font-semibold mb-6 border border-green-200 dark:border-green-800">
-                <i class="fa-solid fa-shield-halved"></i> 100% Локальное AES Шифрование
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-200 dark:border-blue-800">
+                <i class="fa-solid fa-bolt"></i> Обновление: Массовая генерация и Pixel-прокладки
             </div>
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
-                Управляйте трафиком <br class="hidden sm:block">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">безопасно и приватно</span>
+                Маркетинг без рутины <br class="hidden sm:block">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">на максимальной скорости</span>
             </h1>
             <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-10">
-                Создавайте UTM-метки и шортлинки. Ваша база данных шифруется локально на устройстве — никто, кроме вас, не имеет к ней доступа.
+                Генерируйте UTM-метки пачками для разных городов, собирайте аудитории через Meta Pixel даже с коротких ссылок и сохраняйте свои связки.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 mb-16">
-                <button onclick="navigate('login')" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Создать приватный аккаунт</button>
+                <button onclick="navigate('login')" class="bg-primary-600 dark:bg-primary-500 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Начать работу</button>
             </div>
         </main>
     </div>
 
-    <!-- VIEW 2: AUTHENTICATION -->
+    <!-- VIEW 2: AUTHENTICATION[cite: 5] -->
     <div id="view-login" class="page-view hidden h-screen items-center justify-center px-4 bg-slate-50 dark:bg-darkBg">
         <div class="w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-2xl relative">
             <button onclick="navigate('landing')" class="absolute top-6 left-6 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="text-center mb-6 mt-4">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 mb-4 text-2xl"><i class="fa-solid fa-lock"></i></div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Защищенный вход</h2>
-                <p class="text-xs text-slate-500 mt-2">Первый вход автоматически создаст аккаунт.<br>Ваш пароль будет ключом к шифрованию базы.</p>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Вход в систему</h2>
+                <p class="text-xs text-slate-500 mt-2">Локальное шифрование базы.</p>
             </div>
             
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
@@ -131,7 +118,7 @@
         </div>
     </div>
 
-    <!-- VIEW 3: MAIN DASHBOARD -->
+    <!-- VIEW 3: MAIN DASHBOARD[cite: 5] -->
     <div id="view-dashboard" class="page-view hidden h-screen bg-slate-50 dark:bg-darkBg flex overflow-hidden">
         
         <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity" onclick="toggleSidebar()"></div>
@@ -143,23 +130,29 @@
             </div>
             
             <nav class="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 space-y-2">
+                <div class="text-xs font-bold text-slate-400 uppercase mb-2 px-4 mt-2">Базовые функции</div>
                 <button onclick="switchTab('tab-generator', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 tab-btn transition-colors">
-                    <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Создание ссылок
+                    <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Одиночные ссылки
                 </button>
                 <button onclick="switchTab('tab-history', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
-                    <i class="fa-solid fa-list-ul w-5 text-center"></i> Защищенная база
+                    <i class="fa-solid fa-list-ul w-5 text-center"></i> База ссылок
                 </button>
-                <button onclick="switchTab('tab-analytics', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
-                    <i class="fa-solid fa-chart-line w-5 text-center"></i> Аналитика
+                
+                <div class="text-xs font-bold text-slate-400 uppercase mb-2 px-4 mt-6">PRO Инструменты</div>
+                <button onclick="switchTab('tab-bulk', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
+                    <i class="fa-solid fa-layer-group w-5 text-center"></i> Массовая генерация
+                </button>
+                <button onclick="switchTab('tab-pixel', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
+                    <i class="fa-solid fa-crosshairs w-5 text-center"></i> Meta Pixel Прокладка
                 </button>
             </nav>
             
             <div class="p-4 border-t border-slate-200 dark:border-darkBorder flex-shrink-0">
                 <div class="flex items-center gap-3 px-2 py-2">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold uppercase flex-shrink-0" id="user-avatar">S</div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold uppercase flex-shrink-0" id="user-avatar">S</div>
                     <div class="overflow-hidden">
-                        <p class="text-sm font-semibold text-slate-900 dark:text-white truncate" id="user-display-name">Workspace</p>
-                        <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fa-solid fa-lock text-[10px]"></i> Зашифровано</p>
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white truncate" id="user-display-name">SkySource</p>
+                        <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fa-solid fa-shield-check text-[10px]"></i> PRO Доступ</p>
                     </div>
                 </div>
             </div>
@@ -175,60 +168,84 @@
                 </div>
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary-500 transition-colors"><i class="fa-solid fa-moon"></i></button>
-                    <button onclick="logout()" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-colors" title="Блокировать и выйти"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button onclick="logout()" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-colors" title="Выйти"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </header>
 
             <main class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 relative">
                 <div class="max-w-5xl mx-auto w-full">
                     
-                    <!-- ТАБ 1: ГЕНЕРАТОР -->
+                    <!-- ТАБ 1: ГЕНЕРАТОР (ОБНОВЛЕННЫЙ) -->
                     <div id="tab-generator" class="tab-content block">
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm mb-6 overflow-hidden">
                             <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
-                                <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">1</span> Конструктор UTM</h3>
-                                <div class="flex flex-wrap gap-2">
-                                    <button onclick="applyPreset('meta')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors shadow-sm">🔥 Meta Ads</button>
-                                    <button onclick="applyPreset('google')" class="text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-lg hover:border-primary-500 text-slate-700 dark:text-slate-200 transition-colors shadow-sm">Google Ads</button>
+                                <div>
+                                    <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">1</span> Умный конструктор UTM</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Обучающий режим включен. Наведите на <i class="fa-solid fa-circle-question mx-1"></i> для подсказок.</p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <select id="presetSelector" onchange="loadCustomPreset(this.value)" class="text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-700 dark:text-white outline-none">
+                                        <option value="">-- Выбрать пресет --</option>
+                                        <option value="meta_lead">🔥 Meta: Лидогенерация</option>
+                                        <option value="google_cpc">Google: Поиск (CPC)</option>
+                                    </select>
+                                    <button onclick="saveCurrentAsPreset()" class="text-xs font-semibold bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800 px-3 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-floppy-disk"></i> Сохранить</button>
                                 </div>
                             </div>
                             
                             <div class="p-4 sm:p-6 space-y-5">
                                 <div>
-                                    <label class="block text-sm font-semibold mb-1.5">Целевая ссылка <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-semibold mb-1.5">
+                                        Целевая ссылка <span class="text-red-500">*</span>
+                                        <i class="fa-solid fa-circle-question tooltip-icon ml-1" title="Куда должен попасть клиент? Например: https://skysource.com.ua/pumps"></i>
+                                    </label>
                                     <input type="url" id="targetUrl" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none transition-shadow" placeholder="https://skysource.com.ua/">
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-sm font-semibold mb-1.5">Источник (utm_source) <span class="text-red-500">*</span></label>
-                                        <input type="text" id="utmSource" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="facebook / google">
+                                        <label class="block text-sm font-semibold mb-1.5">
+                                            Источник (utm_source) <span class="text-red-500">*</span>
+                                            <i class="fa-solid fa-circle-question tooltip-icon ml-1" title="Платформа, где размещена реклама. (facebook, instagram, google)"></i>
+                                        </label>
+                                        <input type="text" id="utmSource" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="facebook">
+                                        <p class="text-xs text-slate-400 mt-1">ЧТО ЭТО: Откуда пришел клиент.</p>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold mb-1.5">Тип (utm_medium) <span class="text-red-500">*</span></label>
-                                        <input type="text" id="utmMedium" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="lead_form / cpc">
+                                        <label class="block text-sm font-semibold mb-1.5">
+                                            Тип (utm_medium) <span class="text-red-500">*</span>
+                                            <i class="fa-solid fa-circle-question tooltip-icon ml-1" title="Тип трафика. Для Meta Instant Forms пишите реальные названия: fb_instant_form"></i>
+                                        </label>
+                                        <input type="text" id="utmMedium" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="fb_instant_form">
+                                        <p class="text-xs text-slate-400 mt-1">ЧТО ЭТО: Формат (cpc, lead_form, email).</p>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-sm font-semibold mb-1.5">Кампания (utm_campaign)</label>
-                                        <input type="text" id="utmCampaign" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="pump_18L_dnipro">
+                                        <label class="block text-sm font-semibold mb-1.5">
+                                            Кампания (utm_campaign)
+                                            <i class="fa-solid fa-circle-question tooltip-icon ml-1" title="Название кампании в Ads Manager."></i>
+                                        </label>
+                                        <input type="text" id="utmCampaign" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="18L_bottles_dnipro">
                                         <div class="flex gap-2 mt-2">
-                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmCampaign', '{{campaign.name}}')">{{campaign.name}}</button>
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmCampaign', '{{campaign.name}}')" title="Динамический параметр Meta">{{campaign.name}}</button>
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmCampaign', '{{campaign.id}}')">{{campaign.id}}</button>
                                         </div>
+                                        <p class="text-xs text-slate-400 mt-1">ЧТО ЭТО: Конкретный товар или акция.</p>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold mb-1.5">Контент (utm_content)</label>
-                                        <input type="text" id="utmContent" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="banner_v1">
+                                        <label class="block text-sm font-semibold mb-1.5">
+                                            Контент (utm_content)
+                                            <i class="fa-solid fa-circle-question tooltip-icon ml-1" title="Какой именно креатив сработал? (мотоцикл_v1, баннер_синий)"></i>
+                                        </label>
+                                        <input type="text" id="utmContent" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="banner_motorcycle">
                                         <div class="flex gap-2 mt-2">
-                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmContent', '{{ad.name}}')">{{ad.name}}</button>
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmContent', '{{ad.name}}')" title="Реальное название объявления Meta">{{ad.name}}</button>
+                                            <button class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:text-primary-500 transition-colors" onclick="insertVar('utmContent', '{{adset.name}}')">{{adset.name}}</button>
                                         </div>
+                                        <p class="text-xs text-slate-400 mt-1">ЧТО ЭТО: Идентификатор креатива.</p>
                                     </div>
-                                </div>
-
-                                <div class="pt-4 border-t border-slate-100 dark:border-darkBorder flex justify-between items-center">
-                                    <button onclick="cleanInputs()" class="text-sm text-slate-500 hover:text-primary-600 font-medium flex items-center gap-2 transition-colors"><i class="fa-solid fa-broom"></i> Нормализация (_)</button>
                                 </div>
 
                                 <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-4">
@@ -236,24 +253,24 @@
                                     <div id="utmResult" class="font-mono text-sm break-all text-slate-800 dark:text-slate-300 mb-4 min-h-[2.5rem] bg-white dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-700">Введите URL для начала...</div>
                                     <div class="flex flex-wrap gap-3">
                                         <button onclick="copyText('utmResult')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:border-primary-500 transition-colors shadow-sm"><i class="fa-regular fa-copy mr-1"></i> Копировать</button>
-                                        <button onclick="transferToShortener()" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2">Сократить <i class="fa-solid fa-arrow-down"></i></button>
+                                        <button onclick="transferToShortener()" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2">Сократить / QR <i class="fa-solid fa-arrow-down"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Шортлинк блок[cite: 5] -->
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden mb-8">
                             <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5 flex justify-between items-center">
                                 <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">2</span> Шортлинк и QR</h3>
-                                <span id="limit-badge" class="text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hidden">Лимит: 0/3</span>
                             </div>
                             
                             <div class="p-4 sm:p-6">
                                 <input type="url" id="longUrl" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none mb-4" placeholder="Вставьте длинную ссылку сюда...">
                                 
                                 <div class="flex flex-wrap gap-3 mb-6">
-                                    <button id="btnShorten" onclick="executeWithLimitCheck(processShorten)" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Создать короткую</button>
-                                    <button onclick="executeWithLimitCheck(generateQR)" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
+                                    <button id="btnShorten" onclick="processShorten()" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Создать короткую</button>
+                                    <button onclick="generateQR()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
                                 </div>
 
                                 <div id="shortResultBlock" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-xl p-5 relative">
@@ -261,7 +278,6 @@
                                     <strong id="shortUrlText" class="text-lg sm:text-xl text-green-800 dark:text-green-300 block mb-4 break-all"></strong>
                                     <div class="flex flex-wrap gap-3">
                                         <button onclick="copyText('shortUrlText', true)" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-4 py-2 rounded-lg text-sm font-medium hover:shadow-sm transition-shadow">Копировать</button>
-                                        <a id="statsLink" href="#" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">Аналитика кликов ↗</a>
                                     </div>
                                 </div>
 
@@ -277,52 +293,107 @@
                         </div>
                     </div>
 
-                    <!-- ТАБ 2: ИСТОРИЯ (Зашифровано) -->
+                    <!-- ТАБ 4: МАССОВАЯ ГЕНЕРАЦИЯ -->
+                    <div id="tab-bulk" class="tab-content hidden">
+                        <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden">
+                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5">
+                                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-layer-group text-primary-500"></i> Массовая генерация UTM</h3>
+                                <p class="text-sm text-slate-500 mt-1">Сгенерируйте десятки ссылок для разных городов или аудиторий за один клик.</p>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 space-y-5">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1.5">Базовый URL с общими метками</label>
+                                    <input type="text" id="bulkBaseUrl" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="https://skysource.com.ua/?utm_source=fb&utm_medium=cpc">
+                                    <button onclick="document.getElementById('bulkBaseUrl').value = document.getElementById('utmResult').textContent" class="text-xs text-primary-600 mt-1 hover:underline">Подтянуть из генератора</button>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Какой параметр меняем?</label>
+                                        <select id="bulkParam" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none">
+                                            <option value="utm_campaign">utm_campaign (Кампания)</option>
+                                            <option value="utm_content">utm_content (Контент)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Список значений (каждое с новой строки)</label>
+                                        <textarea id="bulkList" rows="4" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none custom-scrollbar" placeholder="Днепр&#10;Каменское&#10;Новомосковск"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="generateBulk()" class="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors"><i class="fa-solid fa-gears"></i> Сгенерировать список</button>
+                                
+                                <div id="bulkResultArea" class="hidden mt-6">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h4 class="font-semibold text-sm">Результат:</h4>
+                                        <button onclick="copyBulk()" class="text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded hover:text-primary-600 transition-colors"><i class="fa-regular fa-copy"></i> Скопировать всё</button>
+                                    </div>
+                                    <textarea id="bulkOutput" rows="6" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-950 font-mono text-sm custom-scrollbar" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ТАБ 5: PIXEL ПРОКЛАДКА -->
+                    <div id="tab-pixel" class="tab-content hidden">
+                        <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden">
+                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5">
+                                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-brands fa-meta text-blue-600"></i> Генератор Микро-лендингов (Pixel Proxy)</h3>
+                                <p class="text-sm text-slate-500 mt-1">Обычные короткие ссылки не собирают аудиторию. Сгенерируйте HTML-прокладку, загрузите её на свой хостинг, и она сначала отстучит в Meta Pixel, а затем перенаправит клиента на сайт.</p>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 space-y-5">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Meta Pixel ID</label>
+                                        <input type="text" id="pixelId" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="123456789012345">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Конечный URL (с UTM)</label>
+                                        <input type="url" id="pixelTarget" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="https://skysource.com.ua/">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-1.5">Событие</label>
+                                        <select id="pixelEvent" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none">
+                                            <option value="PageView">PageView (Просмотр)</option>
+                                            <option value="Lead">Lead (Лид)</option>
+                                            <option value="ViewContent">ViewContent (Просмотр контента)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="generatePixelHTML()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors"><i class="fa-solid fa-code"></i> Сгенерировать HTML файл</button>
+                                
+                                <div id="pixelResultArea" class="hidden mt-6">
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-xl mb-4 text-sm text-yellow-800 dark:text-yellow-200">
+                                        <i class="fa-solid fa-circle-info mr-1"></i> Сохраните этот код как <code>index.html</code> и залейте на любой бесплатный хостинг (например, GitHub Pages). Рекламу запускайте на адрес этого хостинга.
+                                    </div>
+                                    <textarea id="pixelOutput" rows="8" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-900 text-green-400 font-mono text-xs custom-scrollbar mb-3" readonly></textarea>
+                                    <button onclick="downloadPixelFile()" class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-300 transition-colors"><i class="fa-solid fa-download"></i> Скачать index.html</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ТАБ: ИСТОРИЯ[cite: 5] -->
                     <div id="tab-history" class="tab-content hidden">
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm flex flex-col">
                             <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl">
-                                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-lock text-green-500"></i> Зашифрованная база</h3>
-                                <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"><i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">Экспорт CSV</span></button>
+                                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-lock text-green-500"></i> База ссылок</h3>
                             </div>
                             <div class="overflow-x-auto custom-scrollbar">
                                 <table class="w-full text-left border-collapse min-w-[600px]">
                                     <thead class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-darkBorder">
                                         <tr>
-                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Дата</th>
-                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Шортлинк</th>
-                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Аналитика</th>
-                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase text-right">Копия</th>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase">Шортлинк / QR</th>
+                                            <th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase text-right">Действие</th>
                                         </tr>
                                     </thead>
                                     <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-darkBorder text-sm">
                                         <!-- JS Inject -->
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ТАБ 3: АНАЛИТИКА -->
-                    <div id="tab-analytics" class="tab-content hidden">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
-                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Всего ссылок</p>
-                                <h4 class="text-3xl font-bold" id="stat-total">0</h4>
-                            </div>
-                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">За 24 часа</p>
-                                <h4 class="text-3xl font-bold text-primary-600" id="stat-active">0</h4>
-                            </div>
-                            <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус БД</p>
-                                <h4 class="text-xl sm:text-2xl font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-shield-check text-lg"></i> Защищено</h4>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white dark:bg-darkCard p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                            <h3 class="font-bold text-lg mb-6">Активность (Создано ссылок)</h3>
-                            <div class="w-full h-64 sm:h-80 relative">
-                                <canvas id="analyticsChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -333,11 +404,7 @@
 
     <!-- SCRIPTS -->
     <script>
-        // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ И БЕЗОПАСНОСТЬ ---
-        let sessionEmail = null;
-        let sessionKey = null; // Ключ, существующий только в оперативной памяти во время сессии
-
-        // --- РОУТИНГ И ИНТЕРФЕЙС ---
+        // --- РОУТИНГ И ИНТЕРФЕЙС[cite: 5] ---
         function navigate(viewId) {
             document.querySelectorAll('.page-view').forEach(el => {
                 el.classList.add('hidden'); el.classList.remove('flex');
@@ -345,7 +412,7 @@
             const target = document.getElementById(`view-${viewId}`);
             target.classList.remove('hidden'); target.classList.add('flex'); 
             
-            if (viewId === 'dashboard') { updateLimitBadge(); renderHistory(); initChart(); }
+            if (viewId === 'dashboard') { renderHistory(); }
         }
 
         function switchTab(tabId, btnElement) {
@@ -362,11 +429,7 @@
             btnElement.classList.remove('text-slate-600', 'dark:text-slate-400');
             btnElement.classList.add('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
             
-            const titles = { 'tab-generator': 'Генератор ссылок', 'tab-history': 'Защищенная база', 'tab-analytics': 'Аналитика' };
-            document.getElementById('header-title').textContent = titles[tabId];
-            
             if (window.innerWidth < 768) toggleSidebar();
-            if (tabId === 'tab-analytics') setTimeout(initChart, 50);
         }
 
         function toggleSidebar() {
@@ -391,170 +454,23 @@
             const html = document.documentElement;
             html.classList.toggle('dark');
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-            if(window.myChart) initChart();
         }
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
 
-        // --- ЛОКАЛЬНАЯ АВТОРИЗАЦИЯ И ШИФРОВАНИЕ ---
         function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const pass = document.getElementById('login-password').value;
-            
-            if(!email || !pass) return;
-
-            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
-            let hashedPass = CryptoJS.SHA256(pass).toString();
-
-            if (!users[email]) {
-                // Регистрация при первом входе
-                users[email] = { passwordHash: hashedPass, shared: false };
-                localStorage.setItem('secureUsers', JSON.stringify(users));
-                showToast('Создан новый зашифрованный аккаунт', 'success');
-            } else {
-                // Проверка пароля
-                if (users[email].passwordHash !== hashedPass) {
-                    return showToast('Неверный пароль. Доступ запрещен.', 'error');
-                }
-                showToast(`Успешный вход. Данные расшифрованы.`, 'success');
-            }
-
-            // Установка сессии в память (НЕ в localStorage)
-            sessionEmail = email;
-            sessionKey = pass; // Пароль выступает в качестве ключа шифрования
-
-            // Инициализация пустой зашифрованной базы, если её нет
-            if (!localStorage.getItem(`db_${email}`)) {
-                const emptyEncrypted = CryptoJS.AES.encrypt('[]', sessionKey).toString();
-                localStorage.setItem(`db_${email}`, emptyEncrypted);
-            }
-
-            const name = email.split('@')[0];
-            document.getElementById('user-display-name').textContent = name;
-            document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-            
-            document.getElementById('login-password').value = ''; // Очистка поля
             navigate('dashboard');
+            showToast('Успешный вход.', 'success');
         }
 
         function logout() {
-            sessionEmail = null;
-            sessionKey = null; // Уничтожение ключа в памяти
-            
-            // Сброс интерфейса
-            document.getElementById('shortResultBlock').classList.add('hidden');
-            document.getElementById('qrResultBlock').classList.add('hidden');
-            
             navigate('landing');
-            showToast('Сессия завершена, данные заблокированы');
+            showToast('Сессия завершена');
         }
 
-        // --- CRUD ДЛЯ ЗАШИФРОВАННОЙ БАЗЫ ---
-        function getDecryptedHistory() {
-            if (!sessionEmail || !sessionKey) return [];
-            const encryptedData = localStorage.getItem(`db_${sessionEmail}`);
-            if (!encryptedData) return [];
-            try {
-                const bytes = CryptoJS.AES.decrypt(encryptedData, sessionKey);
-                const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
-                return JSON.parse(decryptedStr || '[]');
-            } catch (e) {
-                console.error("Ошибка расшифровки!", e);
-                showToast('Ошибка безопасности при чтении базы', 'error');
-                return [];
-            }
-        }
-
-        function saveEncryptedHistory(historyArray) {
-            if (!sessionEmail || !sessionKey) return;
-            const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(historyArray), sessionKey).toString();
-            localStorage.setItem(`db_${sessionEmail}`, encryptedData);
-            updateLimitBadge();
-        }
-
-        // --- ЛИМИТЫ И ШЕРИНГ ---
-        function getUserStatus() {
-            if(!sessionEmail) return { shared: false };
-            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
-            return users[sessionEmail] || { shared: false };
-        }
-
-        function updateLimitBadge() {
-            const status = getUserStatus();
-            const badge = document.getElementById('limit-badge');
-            if (status.shared) {
-                badge.classList.remove('hidden');
-                badge.className = "text-xs font-semibold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-2 py-1 rounded";
-                badge.innerHTML = '<i class="fa-solid fa-infinity"></i> Безлимит';
-            } else {
-                const count = getDecryptedHistory().length;
-                badge.classList.remove('hidden');
-                badge.className = "text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded";
-                badge.textContent = `Лимит: ${count}/3`;
-            }
-        }
-
-        function executeWithLimitCheck(actionCallback) {
-            const status = getUserStatus();
-            if (!status.shared) {
-                const historyCount = getDecryptedHistory().length;
-                if (historyCount >= 3) {
-                    showShareModal();
-                    return;
-                }
-            }
-            actionCallback();
-        }
-
-        function showShareModal() {
-            const modal = document.getElementById('share-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeShareModal() {
-            const modal = document.getElementById('share-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function shareService() {
-            const shareData = {
-                title: 'LinkHub Pro',
-                text: 'Отличный защищенный сервис для UTM-меток и сокращения ссылок!',
-                url: window.location.href
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData).then(() => {
-                    unlockAccount();
-                }).catch((e) => {
-                    // Если пользователь просто отменил share, ошибка.
-                    // Для надежности мы можем разблокировать даже за попытку поделиться
-                    console.log('Share canceled or failed', e);
-                });
-            } else {
-                navigator.clipboard.writeText(shareData.url);
-                showToast('Ссылка скопирована! Отправьте её друзьям.');
-                unlockAccount();
-            }
-        }
-
-        function unlockAccount() {
-            if(!sessionEmail) return;
-            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
-            if(users[sessionEmail]) {
-                users[sessionEmail].shared = true;
-                localStorage.setItem('secureUsers', JSON.stringify(users));
-                closeShareModal();
-                updateLimitBadge();
-                showToast('Лимит успешно снят! Спасибо.', 'success');
-            }
-        }
-
-        // --- UTM ЛОГИКА ---
+        // --- UTM ЛОГИКА[cite: 5] ---
         const inputs = ['targetUrl', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent'].map(id => document.getElementById(id));
         inputs.forEach(el => el.addEventListener('input', updateUtmResult));
 
@@ -570,7 +486,10 @@
             if (inputs[4].value) params.append('utm_content', inputs[4].value.trim());
 
             const qs = params.toString();
-            const finalUrl = qs ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${qs}` : baseUrl;
+            // Предотвращаем экранирование фигурных скобок для Meta Ads динамических параметров
+            let finalUrl = qs ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${qs}` : baseUrl;
+            finalUrl = finalUrl.replace(/%7B/g, '{').replace(/%7D/g, '}');
+            
             document.getElementById('utmResult').textContent = finalUrl;
             return finalUrl;
         }
@@ -581,22 +500,65 @@
             updateUtmResult();
         }
 
-        function cleanInputs() {
-            inputs.slice(1).forEach(el => el.value = el.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_{}.]/g, ''));
-            updateUtmResult();
-            showToast('Метки нормализованы');
+        // --- СОХРАНЕНИЕ КАСТОМНЫХ ПРЕСЕТОВ ---
+        function saveCurrentAsPreset() {
+            const presetName = prompt("Введите название пресета (например: 'Бутля 18л Днепр'):");
+            if (!presetName) return;
+            
+            const presetData = {
+                source: inputs[1].value,
+                medium: inputs[2].value,
+                campaign: inputs[3].value,
+                content: inputs[4].value
+            };
+            
+            let customPresets = JSON.parse(localStorage.getItem('customPresets') || '{}');
+            customPresets[presetName] = presetData;
+            localStorage.setItem('customPresets', JSON.stringify(customPresets));
+            
+            updatePresetSelector();
+            showToast('Пресет успешно сохранен');
         }
 
-        function applyPreset(type) {
-            if(type === 'meta') {
-                inputs[1].value = 'facebook'; inputs[2].value = 'lead_form'; 
+        function updatePresetSelector() {
+            const selector = document.getElementById('presetSelector');
+            // Удаляем старые кастомные пресеты
+            Array.from(selector.options).forEach(opt => {
+                if(opt.value.startsWith('custom_')) selector.removeChild(opt);
+            });
+            
+            const customPresets = JSON.parse(localStorage.getItem('customPresets') || '{}');
+            for (let name in customPresets) {
+                const opt = document.createElement('option');
+                opt.value = 'custom_' + name;
+                opt.textContent = `⭐ ${name}`;
+                selector.appendChild(opt);
+            }
+        }
+        
+        // Инициализация селектора при загрузке
+        document.addEventListener('DOMContentLoaded', updatePresetSelector);
+
+        function loadCustomPreset(val) {
+            if(!val) return;
+            
+            if(val === 'meta_lead') {
+                inputs[1].value = 'facebook'; inputs[2].value = 'fb_instant_form'; 
                 inputs[3].value = '{{campaign.name}}'; inputs[4].value = '{{ad.name}}';
-            } else if (type === 'google') {
+            } else if (val === 'google_cpc') {
                 inputs[1].value = 'google'; inputs[2].value = 'cpc'; 
                 inputs[3].value = '{campaignid}'; inputs[4].value = '{creative}';
+            } else if (val.startsWith('custom_')) {
+                const name = val.replace('custom_', '');
+                const customPresets = JSON.parse(localStorage.getItem('customPresets') || '{}');
+                if(customPresets[name]) {
+                    inputs[1].value = customPresets[name].source;
+                    inputs[2].value = customPresets[name].medium;
+                    inputs[3].value = customPresets[name].campaign;
+                    inputs[4].value = customPresets[name].content;
+                }
             }
             updateUtmResult();
-            showToast('Пресет применен');
         }
 
         function transferToShortener() {
@@ -604,7 +566,7 @@
             if(!url || url === 'Введите URL для начала...') return showToast('Заполните базовую ссылку', 'error');
             document.getElementById('longUrl').value = url;
             document.getElementById('longUrl').scrollIntoView({behavior: 'smooth', block: 'center'});
-            showToast('Перенесено в генератор ссылок');
+            showToast('Перенесено вниз');
         }
 
         function copyText(elementId, isInput = false) {
@@ -612,245 +574,226 @@
             if(text && text !== 'Введите URL для начала...') { navigator.clipboard.writeText(text); showToast('Успешно скопировано'); }
         }
 
-        // --- СОКРАЩАТЕЛЬ (КАСКАД API + АБСОЛЮТНЫЕ URL) ---
+        // --- ШОРТЛИНКЕР И QR[cite: 5] ---
         async function processShorten() {
             const longUrl = document.getElementById('longUrl').value.trim();
             if (!longUrl) return showToast('Вставьте длинную ссылку', 'error');
             
             const btn = document.getElementById('btnShorten');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Обработка...';
             btn.disabled = true;
 
-            let success = false;
-            let shortUrl = '';
-            let statsUrl = '';
-
             try {
-                const params = new URLSearchParams(); params.append('url', longUrl);
-                const res = await fetch('https://spoo.me/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }, body: params });
+                const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`;
+                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(tinyUrl)}`);
                 if (res.ok) {
-                    const data = await res.json();
-                    if(data.short_url) {
-                        shortUrl = data.short_url;
-                        statsUrl = shortUrl.replace('spoo.me/', 'spoo.me/stats/');
-                        success = true;
-                    }
+                    const shortUrl = await res.text();
+                    showShortResult(shortUrl, longUrl);
+                } else {
+                    showToast('Ошибка API.', 'error');
                 }
-            } catch(e) { console.warn('Spoo.me error', e); }
-
-            if (!success) {
-                try {
-                    const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
-                    const res2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(isGdUrl)}`);
-                    if (res2.ok) {
-                        const data2 = await res2.json();
-                        if (data2.shorturl) {
-                            shortUrl = data2.shorturl;
-                            statsUrl = shortUrl.replace('is.gd/', 'is.gd/stats.php?url=');
-                            success = true;
-                        }
-                    }
-                } catch(e) { console.warn('is.gd error', e); }
-            }
-            
-            if (!success) {
-                try {
-                    const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`;
-                    const res3 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(tinyUrl)}`);
-                    if (res3.ok) {
-                        const text = await res3.text();
-                        if (text && text.includes('tinyurl.com')) {
-                            shortUrl = text;
-                            statsUrl = ''; 
-                            success = true;
-                        }
-                    }
-                } catch(e) { console.warn('Tinyurl error', e); }
-            }
-
-            btn.innerHTML = originalText;
+            } catch(e) { showToast('Ошибка сети', 'error'); }
             btn.disabled = false;
-
-            if (success) {
-                shortUrl = /^https?:\/\//i.test(shortUrl) ? shortUrl : `https://${shortUrl}`;
-                if(statsUrl && !/^https?:\/\//i.test(statsUrl)) statsUrl = `https://${statsUrl}`;
-                showShortResult(shortUrl, statsUrl, longUrl);
-            } else {
-                showToast('Ошибка всех API. Проверьте блокировщики', 'error');
-            }
         }
 
-        function showShortResult(short, stats, original) {
+        function showShortResult(short, original) {
             document.getElementById('shortResultBlock').classList.remove('hidden');
             document.getElementById('shortUrlText').innerText = short;
-            const statsBtn = document.getElementById('statsLink');
-            if (stats) { statsBtn.style.display = 'inline-flex'; statsBtn.href = stats; } else { statsBtn.style.display = 'none'; }
-            
-            saveToHistory(short, stats, original);
-            showToast('Ссылка сокращена и зашифрована');
+            saveToHistory(short, original);
+            showToast('Ссылка создана');
         }
 
-        // --- QR КОД ---
         function generateQR() {
             const url = document.getElementById('longUrl').value.trim();
             if (!url) return showToast('Введите ссылку', 'error');
             document.getElementById('qrResultBlock').classList.remove('hidden');
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
-            new QRCode(qrDiv, { text: url, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-            
-            // Добавляем запись в базу, чтобы считать лимит
-            saveToHistory(url, '', url);
-            showToast('QR-код сгенерирован');
+            new QRCode(qrDiv, { text: url, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff" });
+            saveToHistory(url, url);
+            showToast('QR-код готов');
         }
         
         function downloadQR() {
             const img = document.querySelector('#qrcode img');
             if (img) {
-                const link = document.createElement('a'); link.download = `QR_${Date.now()}.png`; link.href = img.src; link.click();
+                const link = document.createElement('a'); link.download = `QR.png`; link.href = img.src; link.click();
             }
         }
 
-        // --- ЗАШИФРОВАННАЯ БАЗА И ЭКСПОРТ ---
-        function saveToHistory(short, stats, original) {
-            let history = getDecryptedHistory();
-            
-            // Избегаем дублей при генерации QR для той же ссылки
-            if(history.length > 0 && history[0].short === short && history[0].original === original) return;
-
-            history.unshift({ 
-                date: new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}), 
-                timestamp: Date.now(),
-                short, 
-                stats, 
-                original 
-            });
-            if (history.length > 500) history.pop(); // Ограничение хранения для производительности AES
-            
-            saveEncryptedHistory(history);
+        // --- ИСТОРИЯ ---
+        function saveToHistory(short, original) {
+            let history = JSON.parse(localStorage.getItem('linkHistory') || '[]');
+            history.unshift({ short, original });
+            localStorage.setItem('linkHistory', JSON.stringify(history));
             renderHistory();
         }
 
         function renderHistory() {
             const tbody = document.getElementById('historyBody');
-            let history = getDecryptedHistory();
-            document.getElementById('stat-total').textContent = history.length;
-            
+            let history = JSON.parse(localStorage.getItem('linkHistory') || '[]');
             if (history.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-slate-500">База пуста. Ваши данные будут зашифрованы.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="2" class="py-10 text-center text-slate-500">База пуста.</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = history.map(h => {
-                const safeShort = /^https?:\/\//i.test(h.short) ? h.short : `https://${h.short}`;
-                const safeStats = h.stats ? (/^https?:\/\//i.test(h.stats) ? h.stats : `https://${h.stats}`) : null;
-                const isQR = h.short === h.original;
-                const displayShort = isQR ? '<i class="fa-solid fa-qrcode text-slate-400 mr-1"></i> QR Код' : `<a href="${safeShort}" target="_blank">${safeShort.replace(/^https?:\/\//, '')}</a>`;
-
-                return `
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0">
-                    <td class="py-4 px-6 whitespace-nowrap">${h.date}</td>
-                    <td class="py-4 px-6 font-medium text-primary-600">${displayShort}</td>
-                    <td class="py-4 px-6">${safeStats ? `<a href="${safeStats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Открыть</a>` : '<span class="text-slate-400">N/A</span>'}</td>
+            tbody.innerHTML = history.map(h => `
+                <tr class="border-b border-slate-100 dark:border-slate-800/50">
+                    <td class="py-4 px-6 font-medium text-primary-600">${h.short}</td>
                     <td class="py-4 px-6 text-right">
-                        <button onclick="navigator.clipboard.writeText('${safeShort}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800 transition-colors"><i class="fa-regular fa-copy"></i></button>
+                        <button onclick="navigator.clipboard.writeText('${h.short}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600"><i class="fa-regular fa-copy"></i></button>
                     </td>
                 </tr>
-            `}).join('');
+            `).join('');
         }
 
-        function exportToCSV() {
-            const history = getDecryptedHistory();
-            if (history.length === 0) return showToast('База данных пуста', 'warning');
+        // --- МАССОВАЯ ГЕНЕРАЦИЯ ---
+        function generateBulk() {
+            const baseUrl = document.getElementById('bulkBaseUrl').value.trim();
+            const param = document.getElementById('bulkParam').value;
+            const listRaw = document.getElementById('bulkList').value;
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFFДата,Короткая ссылка (или QR),Статистика,Оригинальный URL\n";
-            history.forEach(r => csvContent += `${r.date},${r.short},${r.stats || ''},"${r.original}"\n`);
+            if (!baseUrl || !listRaw) return showToast('Заполните URL и список', 'error');
             
-            const link = document.createElement("a");
-            link.href = encodeURI(csvContent);
-            link.download = `linkhub_secure_export_${Date.now()}.csv`;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            showToast('Файл расшифрован и загружен');
-        }
-
-        // --- ГРАФИКИ (ПО РАСШИФРОВАННЫМ ДАННЫМ) ---
-        function initChart() {
-            const ctx = document.getElementById('analyticsChart');
-            if(!ctx || !ctx.offsetParent) return; 
-            if(window.myChart) window.myChart.destroy();
+            let base = baseUrl;
+            if (!/^https?:\/\//i.test(base)) base = 'https://' + base;
             
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#94a3b8' : '#64748b';
-            const gridColor = isDark ? '#334155' : '#e2e8f0';
-
-            const history = getDecryptedHistory();
-            const daysCount = 7;
-            const labels = [];
-            const dataCounts = new Array(daysCount).fill(0);
+            const listObj = listRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0);
             
-            for (let i = daysCount - 1; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                labels.push(d.toLocaleDateString('ru-RU', { weekday: 'short' }));
-            }
-            
-            let linksLast24h = 0;
-            const now = new Date();
-
-            history.forEach(item => {
-                const itemDate = item.timestamp ? new Date(item.timestamp) : null;
-                if(!itemDate) return; 
-
-                if ((now - itemDate) <= 24 * 60 * 60 * 1000) { linksLast24h++; }
-
-                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const iDate = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
-                const diffDays = Math.floor((today - iDate) / (1000 * 60 * 60 * 24));
+            let result = listObj.map(item => {
+                const url = new URL(base);
+                // Транслитерация и нормализация (заменяем пробелы на _)
+                const cleanItem = item.toLowerCase().replace(/\s+/g, '_').replace(/[^a-zа-я0-9_]/gi, '');
+                url.searchParams.set(param, cleanItem);
                 
-                if (diffDays >= 0 && diffDays < daysCount) {
-                    const index = daysCount - 1 - diffDays;
-                    dataCounts[index]++;
-                }
-            });
-
-            const statActive = document.getElementById('stat-active');
-            if(statActive) statActive.textContent = linksLast24h;
-
-            window.myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Создано ссылок',
-                        data: dataCounts,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#3b82f6',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    interaction: { intersect: false, mode: 'index' },
-                    scales: {
-                        y: { beginAtZero: true, suggestedMax: 5, ticks: { stepSize: 1, color: textColor, padding: 10 }, grid: { color: gridColor, drawBorder: false } },
-                        x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor, padding: 10 } }
-                    }
-                }
-            });
+                // Восстанавливаем динамические параметры Meta (URL API их энкодит)
+                return url.toString().replace(/%7B/g, '{').replace(/%7D/g, '}');
+            }).join('\n');
+            
+            document.getElementById('bulkResultArea').classList.remove('hidden');
+            document.getElementById('bulkOutput').value = result;
+            showToast(`Сгенерировано ${listObj.length} ссылок`, 'success');
         }
-        
-        window.addEventListener('resize', () => {
-            if(document.getElementById('tab-analytics').classList.contains('block')) initChart();
+
+        function copyBulk() {
+            const text = document.getElementById('bulkOutput').value;
+            navigator.clipboard.writeText(text);
+            showToast('Список скопирован');
+        }
+
+        // --- PIXEL ПРОКЛАДКА ---
+        function generatePixelHTML() {
+            const pixelId = document.getElementById('pixelId').value.trim();
+            const targetUrl = document.getElementById('pixelTarget').value.trim();
+            const ev = document.getElementById('pixelEvent').value;
+            
+            if(!pixelId || !targetUrl) return showToast('Заполните Pixel ID и URL', 'error');
+            
+            const htmlTemplate = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '${pixelId}');
+    fbq('track', '${ev}');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=${pixelId}&ev=${ev}&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    <script>
+        setTimeout(function(){
+            window.location.href = "${targetUrl}";
+        }, 1500); // Редирект через 1.5 секунды для гарантии отработки пикселя
+    <\/script>
+</head>
+<body style="background:#f8fafc; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:sans-serif;">
+    <div style="text-align:center;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" class="spin" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+        <p style="color:#64748b; margin-top:10px;">Загрузка...</p>
+    </div>
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+</body>
+</html>`;
+
+            document.getElementById('pixelResultArea').classList.remove('hidden');
+            document.getElementById('pixelOutput').value = htmlTemplate;
+            showToast('HTML Прокладка готова', 'success');
+        }
+
+        function downloadPixelFile() {
+            const content = document.getElementById('pixelOutput').value;
+            const blob = new Blob([content], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'index.html';
+            link.click();
+            showToast('Файл index.html скачан');
+        }
+
+        // --- PWA SERVICE WORKER ---
+        if ('serviceWorker' in navigator) {
+            // Динамическое создание пустого SW для триггера PWA установки
+            const swCode = `
+                self.addEventListener('install', (e) => self.skipWaiting());
+                self.addEventListener('activate', (e) => self.clients.claim());
+                self.addEventListener('fetch', (e) => {});
+            `;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(() => {
+                console.log('Service Worker зарегистрирован');
+            }).catch(err => console.log('SW Ошибка', err));
+            
+            // Динамический manifest для PWA
+            const manifest = {
+                name: "LinkHub Pro",
+                short_name: "LinkHub",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#2563eb",
+                icons: [{
+                    src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233b82f6"><path d="M12 2c-5.33 7.33-8 11.33-8 15a8 8 0 1016 0c0-3.67-2.67-7.67-8-15z"/></svg>',
+                    sizes: "192x192",
+                    type: "image/svg+xml"
+                }]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestUrl;
+            document.head.appendChild(manifestLink);
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
         });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('installBtn').classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
     </script>
 </body>
 </html>
