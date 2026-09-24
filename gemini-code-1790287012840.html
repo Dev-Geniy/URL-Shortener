@@ -9,9 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Иконки (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Библиотеки -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -50,6 +53,27 @@
 
     <div id="toast-container"></div>
 
+    <!-- Модальное окно: Лимит достигнут -->
+    <div id="share-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity">
+        <div class="bg-white dark:bg-darkCard p-8 rounded-3xl max-w-md w-full text-center shadow-2xl border border-slate-200 dark:border-darkBorder">
+            <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3 dark:text-white">Лимит исчерпан (3/3)</h3>
+            <p class="mb-8 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Вы создали 3 ссылки — это максимум для базового тарифа. Чтобы получить <b>безлимитный доступ</b> к генерации шортлинков и QR-кодов, просто поделитесь нашим сервисом с коллегами!
+            </p>
+            <div class="space-y-3">
+                <button onclick="shareService()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Поделиться и снять лимит
+                </button>
+                <button onclick="closeShareModal()" class="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3.5 rounded-xl font-medium transition-all">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- VIEW 1: LANDING PAGE -->
     <div id="view-landing" class="page-view flex flex-col h-screen overflow-y-auto custom-scrollbar">
         <nav class="border-b border-slate-200 dark:border-darkBorder bg-white/80 dark:bg-darkCard/80 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
@@ -59,39 +83,24 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <button onclick="toggleTheme()" class="p-2 text-slate-500 hover:text-primary-600 transition-colors"><i class="fa-solid fa-moon"></i></button>
-                    <button onclick="navigate('login')" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-sm">Войти</button>
+                    <button onclick="navigate('login')" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-sm flex items-center gap-2">Войти <i class="fa-solid fa-lock text-xs"></i></button>
                 </div>
             </div>
         </nav>
 
         <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-12 sm:py-20">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-sm font-semibold mb-6 border border-green-200 dark:border-green-800">
+                <i class="fa-solid fa-shield-halved"></i> 100% Локальное AES Шифрование
+            </div>
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
                 Управляйте трафиком <br class="hidden sm:block">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">как профессионал</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">безопасно и приватно</span>
             </h1>
             <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-10">
-                Единая SaaS-платформа для создания UTM-меток, шортлинков без блокировок, генерации QR-кодов и глубокой аналитики.
+                Создавайте UTM-метки и шортлинки. Ваша база данных шифруется локально на устройстве — никто, кроме вас, не имеет к ней доступа.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 mb-16">
-                <button onclick="navigate('login')" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Начать работу</button>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full text-left px-4">
-                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-bullseye"></i></div>
-                    <h3 class="text-xl font-bold mb-3 dark:text-white">Smart UTM Builder</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm">Пресеты для Meta Ads, Google Ads. Автоматическое форматирование, защита от ошибок.</p>
-                </div>
-                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-shield-halved"></i></div>
-                    <h3 class="text-xl font-bold mb-3 dark:text-white">Bulletproof Shortener</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm">Каскадная система API гарантирует 100% срабатывание без проблем с CORS и AdBlock.</p>
-                </div>
-                <div class="bg-white dark:bg-darkCard p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-6"><i class="fa-solid fa-chart-pie"></i></div>
-                    <h3 class="text-xl font-bold mb-3 dark:text-white">Аналитика и База</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm">Визуализация кликов, ведение истории ссылок в локальной базе и экспорт отчетов.</p>
-                </div>
+                <button onclick="navigate('login')" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-xl">Создать приватный аккаунт</button>
             </div>
         </main>
     </div>
@@ -100,22 +109,23 @@
     <div id="view-login" class="page-view hidden h-screen items-center justify-center px-4 bg-slate-50 dark:bg-darkBg">
         <div class="w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-2xl relative">
             <button onclick="navigate('landing')" class="absolute top-6 left-6 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="text-center mb-8 mt-4">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 mb-4 text-2xl"><i class="fa-solid fa-link"></i></div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Вход в систему</h2>
+            <div class="text-center mb-6 mt-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 mb-4 text-2xl"><i class="fa-solid fa-lock"></i></div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Защищенный вход</h2>
+                <p class="text-xs text-slate-500 mt-2">Первый вход автоматически создаст аккаунт.<br>Ваш пароль будет ключом к шифрованию базы.</p>
             </div>
             
-            <form onsubmit="handleLogin(event)" class="space-y-5">
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium mb-2">Рабочий Email</label>
-                    <input type="email" id="login-email" value="admin@skysource.com.ua" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
+                    <input type="email" id="login-email" placeholder="admin@skysource.com.ua" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-2">Пароль</label>
-                    <input type="password" value="12345678" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
+                    <label class="block text-sm font-medium mb-2">Мастер-пароль</label>
+                    <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary-500 outline-none transition-all" required>
                 </div>
                 <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-primary-500/30 flex justify-center items-center gap-2">
-                    Войти в Дашборд <i class="fa-solid fa-arrow-right"></i>
+                    Расшифровать и Войти <i class="fa-solid fa-key"></i>
                 </button>
             </form>
         </div>
@@ -137,7 +147,7 @@
                     <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Создание ссылок
                 </button>
                 <button onclick="switchTab('tab-history', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
-                    <i class="fa-solid fa-list-ul w-5 text-center"></i> База ссылок
+                    <i class="fa-solid fa-list-ul w-5 text-center"></i> Защищенная база
                 </button>
                 <button onclick="switchTab('tab-analytics', this)" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 tab-btn transition-colors">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i> Аналитика
@@ -146,10 +156,10 @@
             
             <div class="p-4 border-t border-slate-200 dark:border-darkBorder flex-shrink-0">
                 <div class="flex items-center gap-3 px-2 py-2">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary-500 to-purple-500 flex items-center justify-center text-white font-bold uppercase flex-shrink-0" id="user-avatar">S</div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold uppercase flex-shrink-0" id="user-avatar">S</div>
                     <div class="overflow-hidden">
                         <p class="text-sm font-semibold text-slate-900 dark:text-white truncate" id="user-display-name">Workspace</p>
-                        <p class="text-xs text-slate-500">PRO План</p>
+                        <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fa-solid fa-lock text-[10px]"></i> Зашифровано</p>
                     </div>
                 </div>
             </div>
@@ -165,7 +175,7 @@
                 </div>
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary-500 transition-colors"><i class="fa-solid fa-moon"></i></button>
-                    <button onclick="navigate('landing')" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-colors" title="Выход"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                    <button onclick="logout()" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-colors" title="Блокировать и выйти"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </header>
 
@@ -233,16 +243,17 @@
                         </div>
 
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm overflow-hidden mb-8">
-                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5">
+                            <div class="border-b border-slate-100 dark:border-darkBorder bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-5 flex justify-between items-center">
                                 <h3 class="font-bold text-lg flex items-center gap-2"><span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">2</span> Шортлинк и QR</h3>
+                                <span id="limit-badge" class="text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hidden">Лимит: 0/3</span>
                             </div>
                             
                             <div class="p-4 sm:p-6">
                                 <input type="url" id="longUrl" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none mb-4" placeholder="Вставьте длинную ссылку сюда...">
                                 
                                 <div class="flex flex-wrap gap-3 mb-6">
-                                    <button id="btnShorten" onclick="processShorten()" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Создать короткую</button>
-                                    <button onclick="generateQR()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
+                                    <button id="btnShorten" onclick="executeWithLimitCheck(processShorten)" class="bg-slate-900 dark:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-primary-700 transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-bolt"></i> Создать короткую</button>
+                                    <button onclick="executeWithLimitCheck(generateQR)" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-6 py-2.5 rounded-xl font-semibold hover:border-primary-500 transition-colors flex items-center gap-2 shadow-sm"><i class="fa-solid fa-qrcode"></i> QR-код</button>
                                 </div>
 
                                 <div id="shortResultBlock" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-xl p-5 relative">
@@ -266,11 +277,11 @@
                         </div>
                     </div>
 
-                    <!-- ТАБ 2: ИСТОРИЯ -->
+                    <!-- ТАБ 2: ИСТОРИЯ (Зашифровано) -->
                     <div id="tab-history" class="tab-content hidden">
                         <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm flex flex-col">
                             <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl">
-                                <h3 class="font-bold text-lg">База данных ссылок</h3>
+                                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-lock text-green-500"></i> Зашифрованная база</h3>
                                 <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"><i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">Экспорт CSV</span></button>
                             </div>
                             <div class="overflow-x-auto custom-scrollbar">
@@ -303,8 +314,8 @@
                                 <h4 class="text-3xl font-bold text-primary-600" id="stat-active">0</h4>
                             </div>
                             <div class="bg-white dark:bg-darkCard p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус API</p>
-                                <h4 class="text-xl sm:text-2xl font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-circle-check text-lg"></i> Online</h4>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Статус БД</p>
+                                <h4 class="text-xl sm:text-2xl font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-shield-check text-lg"></i> Защищено</h4>
                             </div>
                         </div>
                         
@@ -322,6 +333,10 @@
 
     <!-- SCRIPTS -->
     <script>
+        // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ И БЕЗОПАСНОСТЬ ---
+        let sessionEmail = null;
+        let sessionKey = null; // Ключ, существующий только в оперативной памяти во время сессии
+
         // --- РОУТИНГ И ИНТЕРФЕЙС ---
         function navigate(viewId) {
             document.querySelectorAll('.page-view').forEach(el => {
@@ -330,17 +345,7 @@
             const target = document.getElementById(`view-${viewId}`);
             target.classList.remove('hidden'); target.classList.add('flex'); 
             
-            if (viewId === 'dashboard') { renderHistory(); initChart(); }
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const name = email.split('@')[0] || 'User';
-            document.getElementById('user-display-name').textContent = name;
-            document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-            showToast(`Успешный вход: ${name}`, 'success');
-            navigate('dashboard');
+            if (viewId === 'dashboard') { updateLimitBadge(); renderHistory(); initChart(); }
         }
 
         function switchTab(tabId, btnElement) {
@@ -357,7 +362,7 @@
             btnElement.classList.remove('text-slate-600', 'dark:text-slate-400');
             btnElement.classList.add('bg-primary-50', 'text-primary-700', 'dark:bg-primary-900/20', 'dark:text-primary-400');
             
-            const titles = { 'tab-generator': 'Генератор ссылок', 'tab-history': 'База ссылок', 'tab-analytics': 'Аналитика' };
+            const titles = { 'tab-generator': 'Генератор ссылок', 'tab-history': 'Защищенная база', 'tab-analytics': 'Аналитика' };
             document.getElementById('header-title').textContent = titles[tabId];
             
             if (window.innerWidth < 768) toggleSidebar();
@@ -372,18 +377,16 @@
             else { overlay.classList.remove('hidden'); }
         }
 
-        // --- УВЕДОМЛЕНИЯ ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'success' ? '<i class="fa-solid fa-check-circle"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-info"></i>');
+            const icon = type === 'success' ? '<i class="fa-solid fa-check-circle"></i>' : (type === 'error' ? '<i class="fa-solid fa-shield-halved"></i>' : '<i class="fa-solid fa-circle-info"></i>');
             toast.innerHTML = `${icon} <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => { toast.style.animation = 'fadeOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- ТЕМНАЯ ТЕМА ---
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('dark');
@@ -392,6 +395,163 @@
         }
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
+        }
+
+        // --- ЛОКАЛЬНАЯ АВТОРИЗАЦИЯ И ШИФРОВАНИЕ ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const pass = document.getElementById('login-password').value;
+            
+            if(!email || !pass) return;
+
+            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
+            let hashedPass = CryptoJS.SHA256(pass).toString();
+
+            if (!users[email]) {
+                // Регистрация при первом входе
+                users[email] = { passwordHash: hashedPass, shared: false };
+                localStorage.setItem('secureUsers', JSON.stringify(users));
+                showToast('Создан новый зашифрованный аккаунт', 'success');
+            } else {
+                // Проверка пароля
+                if (users[email].passwordHash !== hashedPass) {
+                    return showToast('Неверный пароль. Доступ запрещен.', 'error');
+                }
+                showToast(`Успешный вход. Данные расшифрованы.`, 'success');
+            }
+
+            // Установка сессии в память (НЕ в localStorage)
+            sessionEmail = email;
+            sessionKey = pass; // Пароль выступает в качестве ключа шифрования
+
+            // Инициализация пустой зашифрованной базы, если её нет
+            if (!localStorage.getItem(`db_${email}`)) {
+                const emptyEncrypted = CryptoJS.AES.encrypt('[]', sessionKey).toString();
+                localStorage.setItem(`db_${email}`, emptyEncrypted);
+            }
+
+            const name = email.split('@')[0];
+            document.getElementById('user-display-name').textContent = name;
+            document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+            
+            document.getElementById('login-password').value = ''; // Очистка поля
+            navigate('dashboard');
+        }
+
+        function logout() {
+            sessionEmail = null;
+            sessionKey = null; // Уничтожение ключа в памяти
+            
+            // Сброс интерфейса
+            document.getElementById('shortResultBlock').classList.add('hidden');
+            document.getElementById('qrResultBlock').classList.add('hidden');
+            
+            navigate('landing');
+            showToast('Сессия завершена, данные заблокированы');
+        }
+
+        // --- CRUD ДЛЯ ЗАШИФРОВАННОЙ БАЗЫ ---
+        function getDecryptedHistory() {
+            if (!sessionEmail || !sessionKey) return [];
+            const encryptedData = localStorage.getItem(`db_${sessionEmail}`);
+            if (!encryptedData) return [];
+            try {
+                const bytes = CryptoJS.AES.decrypt(encryptedData, sessionKey);
+                const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
+                return JSON.parse(decryptedStr || '[]');
+            } catch (e) {
+                console.error("Ошибка расшифровки!", e);
+                showToast('Ошибка безопасности при чтении базы', 'error');
+                return [];
+            }
+        }
+
+        function saveEncryptedHistory(historyArray) {
+            if (!sessionEmail || !sessionKey) return;
+            const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(historyArray), sessionKey).toString();
+            localStorage.setItem(`db_${sessionEmail}`, encryptedData);
+            updateLimitBadge();
+        }
+
+        // --- ЛИМИТЫ И ШЕРИНГ ---
+        function getUserStatus() {
+            if(!sessionEmail) return { shared: false };
+            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
+            return users[sessionEmail] || { shared: false };
+        }
+
+        function updateLimitBadge() {
+            const status = getUserStatus();
+            const badge = document.getElementById('limit-badge');
+            if (status.shared) {
+                badge.classList.remove('hidden');
+                badge.className = "text-xs font-semibold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-2 py-1 rounded";
+                badge.innerHTML = '<i class="fa-solid fa-infinity"></i> Безлимит';
+            } else {
+                const count = getDecryptedHistory().length;
+                badge.classList.remove('hidden');
+                badge.className = "text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded";
+                badge.textContent = `Лимит: ${count}/3`;
+            }
+        }
+
+        function executeWithLimitCheck(actionCallback) {
+            const status = getUserStatus();
+            if (!status.shared) {
+                const historyCount = getDecryptedHistory().length;
+                if (historyCount >= 3) {
+                    showShareModal();
+                    return;
+                }
+            }
+            actionCallback();
+        }
+
+        function showShareModal() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function shareService() {
+            const shareData = {
+                title: 'LinkHub Pro',
+                text: 'Отличный защищенный сервис для UTM-меток и сокращения ссылок!',
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).then(() => {
+                    unlockAccount();
+                }).catch((e) => {
+                    // Если пользователь просто отменил share, ошибка.
+                    // Для надежности мы можем разблокировать даже за попытку поделиться
+                    console.log('Share canceled or failed', e);
+                });
+            } else {
+                navigator.clipboard.writeText(shareData.url);
+                showToast('Ссылка скопирована! Отправьте её друзьям.');
+                unlockAccount();
+            }
+        }
+
+        function unlockAccount() {
+            if(!sessionEmail) return;
+            let users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
+            if(users[sessionEmail]) {
+                users[sessionEmail].shared = true;
+                localStorage.setItem('secureUsers', JSON.stringify(users));
+                closeShareModal();
+                updateLimitBadge();
+                showToast('Лимит успешно снят! Спасибо.', 'success');
+            }
         }
 
         // --- UTM ЛОГИКА ---
@@ -466,7 +626,6 @@
             let shortUrl = '';
             let statsUrl = '';
 
-            // 1. Попытка spoo.me
             try {
                 const params = new URLSearchParams(); params.append('url', longUrl);
                 const res = await fetch('https://spoo.me/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }, body: params });
@@ -480,7 +639,6 @@
                 }
             } catch(e) { console.warn('Spoo.me error', e); }
 
-            // 2. Резерв is.gd
             if (!success) {
                 try {
                     const isGdUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&logstat=1`;
@@ -496,7 +654,6 @@
                 } catch(e) { console.warn('is.gd error', e); }
             }
             
-            // 3. Резерв 2 - TinyURL (Обеспечивает 100% работоспособность)
             if (!success) {
                 try {
                     const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`;
@@ -516,10 +673,8 @@
             btn.disabled = false;
 
             if (success) {
-                // Принудительно устанавливаем https:// чтобы избежать локальных переходов
                 shortUrl = /^https?:\/\//i.test(shortUrl) ? shortUrl : `https://${shortUrl}`;
                 if(statsUrl && !/^https?:\/\//i.test(statsUrl)) statsUrl = `https://${statsUrl}`;
-                
                 showShortResult(shortUrl, statsUrl, longUrl);
             } else {
                 showToast('Ошибка всех API. Проверьте блокировщики', 'error');
@@ -532,8 +687,8 @@
             const statsBtn = document.getElementById('statsLink');
             if (stats) { statsBtn.style.display = 'inline-flex'; statsBtn.href = stats; } else { statsBtn.style.display = 'none'; }
             
-            saveHistory(short, stats, original);
-            showToast('Ссылка сокращена');
+            saveToHistory(short, stats, original);
+            showToast('Ссылка сокращена и зашифрована');
         }
 
         // --- QR КОД ---
@@ -544,6 +699,9 @@
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
             new QRCode(qrDiv, { text: url, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+            
+            // Добавляем запись в базу, чтобы считать лимит
+            saveToHistory(url, '', url);
             showToast('QR-код сгенерирован');
         }
         
@@ -554,40 +712,46 @@
             }
         }
 
-        // --- БАЗА И ЭКСПОРТ ---
-        function saveHistory(short, stats, original) {
-            let history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
+        // --- ЗАШИФРОВАННАЯ БАЗА И ЭКСПОРТ ---
+        function saveToHistory(short, stats, original) {
+            let history = getDecryptedHistory();
+            
+            // Избегаем дублей при генерации QR для той же ссылки
+            if(history.length > 0 && history[0].short === short && history[0].original === original) return;
+
             history.unshift({ 
                 date: new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}), 
-                timestamp: Date.now(), // Добавлен timestamp для корректной аналитики
+                timestamp: Date.now(),
                 short, 
                 stats, 
                 original 
             });
-            if (history.length > 100) history.pop();
-            localStorage.setItem('saasHistory', JSON.stringify(history));
+            if (history.length > 500) history.pop(); // Ограничение хранения для производительности AES
+            
+            saveEncryptedHistory(history);
             renderHistory();
         }
 
         function renderHistory() {
             const tbody = document.getElementById('historyBody');
-            let history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
+            let history = getDecryptedHistory();
             document.getElementById('stat-total').textContent = history.length;
             
             if (history.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-slate-500">История пуста. Создайте первую ссылку.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-slate-500">База пуста. Ваши данные будут зашифрованы.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = history.map(h => {
-                // Принудительно обеспечиваем абсолютные URL даже для старых записей
                 const safeShort = /^https?:\/\//i.test(h.short) ? h.short : `https://${h.short}`;
                 const safeStats = h.stats ? (/^https?:\/\//i.test(h.stats) ? h.stats : `https://${h.stats}`) : null;
-                
+                const isQR = h.short === h.original;
+                const displayShort = isQR ? '<i class="fa-solid fa-qrcode text-slate-400 mr-1"></i> QR Код' : `<a href="${safeShort}" target="_blank">${safeShort.replace(/^https?:\/\//, '')}</a>`;
+
                 return `
                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0">
                     <td class="py-4 px-6 whitespace-nowrap">${h.date}</td>
-                    <td class="py-4 px-6 font-medium text-primary-600"><a href="${safeShort}" target="_blank">${safeShort.replace(/^https?:\/\//, '')}</a></td>
+                    <td class="py-4 px-6 font-medium text-primary-600">${displayShort}</td>
                     <td class="py-4 px-6">${safeStats ? `<a href="${safeStats}" target="_blank" class="text-green-600 hover:underline"><i class="fa-solid fa-chart-simple"></i> Открыть</a>` : '<span class="text-slate-400">N/A</span>'}</td>
                     <td class="py-4 px-6 text-right">
                         <button onclick="navigator.clipboard.writeText('${safeShort}'); showToast('Скопировано');" class="text-slate-500 hover:text-primary-600 p-2 rounded bg-slate-100 dark:bg-slate-800 transition-colors"><i class="fa-regular fa-copy"></i></button>
@@ -597,20 +761,20 @@
         }
 
         function exportToCSV() {
-            const history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
+            const history = getDecryptedHistory();
             if (history.length === 0) return showToast('База данных пуста', 'warning');
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFFДата,Короткая ссылка,Статистика,Оригинальный URL\n";
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFFДата,Короткая ссылка (или QR),Статистика,Оригинальный URL\n";
             history.forEach(r => csvContent += `${r.date},${r.short},${r.stats || ''},"${r.original}"\n`);
             
             const link = document.createElement("a");
             link.href = encodeURI(csvContent);
-            link.download = `linkhub_database_${Date.now()}.csv`;
+            link.download = `linkhub_secure_export_${Date.now()}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            showToast('Файл загружается');
+            showToast('Файл расшифрован и загружен');
         }
 
-        // --- ГРАФИКИ (РЕАЛЬНЫЕ ДАННЫЕ) ---
+        // --- ГРАФИКИ (ПО РАСШИФРОВАННЫМ ДАННЫМ) ---
         function initChart() {
             const ctx = document.getElementById('analyticsChart');
             if(!ctx || !ctx.offsetParent) return; 
@@ -620,8 +784,7 @@
             const textColor = isDark ? '#94a3b8' : '#64748b';
             const gridColor = isDark ? '#334155' : '#e2e8f0';
 
-            // Генерируем реальную статистику на основе базы
-            const history = JSON.parse(localStorage.getItem('saasHistory') || '[]');
+            const history = getDecryptedHistory();
             const daysCount = 7;
             const labels = [];
             const dataCounts = new Array(daysCount).fill(0);
@@ -651,7 +814,6 @@
                 }
             });
 
-            // Обновляем счетчик активности за 24 часа на карточке сверху
             const statActive = document.getElementById('stat-active');
             if(statActive) statActive.textContent = linksLast24h;
 
